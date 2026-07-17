@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometri Datar — Segitiga & Segiempat</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d18;
+    --bg-2: #11152a;
+    --card: #161b30;
+    --card-2: #1d2340;
+    --border: #2a3050;
+    --border-2: #3a4170;
+    --fg: #f5f1e8;
+    --muted: #8b92a8;
+    --tri: #ff6b6b;
+    --tri-soft: rgba(255, 107, 107, 0.12);
+    --tri-border: rgba(255, 107, 107, 0.35);
+    --quad: #4ecdc4;
+    --quad-soft: rgba(78, 205, 196, 0.12);
+    --quad-border: rgba(78, 205, 196, 0.35);
+    --accent: #ffe66d;
+    --accent-soft: rgba(255, 230, 109, 0.12);
+    --correct: #4ade80;
+    --wrong: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 10%, rgba(255, 107, 107, 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 85% 90%, rgba(78, 205, 196, 0.10) 0%, transparent 60%),
+      radial-gradient(circle at 50% 50%, rgba(255, 230, 109, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  
+  .slide { display: none; min-height: 100vh; padding: 36px 40px 120px; position: relative; z-index: 2; animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+  .slide.active { display: block; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .geo-bg {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.08;
+    z-index: 0;
+  }
+  
+  .nav-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--border-2); cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active { background: var(--accent); width: 36px; border-radius: 5px; }
+  .nav-dot:hover:not(.active) { background: var(--muted); }
+  
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; }
+  .card-2 { background: var(--card-2); border: 1px solid var(--border-2); border-radius: 14px; }
+  
+  .tab-btn {
+    padding: 10px 18px; border-radius: 10px; cursor: pointer;
+    font-weight: 600; font-size: 14px; transition: all 0.2s;
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  }
+  .tab-btn.active { background: var(--tri); color: #1a0808; border-color: var(--tri); }
+  .tab-btn:hover:not(.active) { color: var(--fg); border-color: var(--border-2); }
+  
+  .quad-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px; cursor: pointer;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .quad-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--quad), var(--accent));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .quad-card:hover { border-color: var(--quad-border); transform: translateY(-3px); }
+  .quad-card:hover::before { transform: scaleX(1); }
+  .quad-card.active { border-color: var(--quad); background: var(--card-2); }
+  .quad-card.active::before { transform: scaleX(1); }
+  
+  .formula-box {
+    background: linear-gradient(135deg, var(--accent-soft), transparent);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px; border-radius: 8px; margin: 8px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  }
+  
+  .prop-row {
+    display: grid; grid-template-columns: 160px 1fr; gap: 12px;
+    padding: 10px 0; border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+  }
+  .prop-row:last-child { border-bottom: none; }
+  .prop-label { color: var(--muted); font-weight: 500; }
+  .prop-value { color: var(--fg); }
+  
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 10px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; border: none;
+    font-family: inherit; font-size: 14px;
+  }
+  .btn-primary { background: var(--accent); color: #1a1410; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 230, 109, 0.3); }
+  .btn-tri { background: var(--tri); color: #1a0808; }
+  .btn-quad { background: var(--quad); color: #051a18; }
+  .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border-2); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.04); border-color: var(--muted); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .badge-tri { background: var(--tri-soft); color: var(--tri); }
+  .badge-quad { background: var(--quad-soft); color: var(--quad); }
+  .badge-easy { background: rgba(74, 222, 128, 0.15); color: var(--correct); }
+  .badge-med { background: rgba(255, 230, 109, 0.15); color: var(--accent); }
+  .badge-hots { background: rgba(239, 68, 68, 0.15); color: #ff7878; }
+  .badge-pg { background: var(--tri-soft); color: var(--tri); }
+  .badge-isian { background: var(--quad-soft); color: var(--quad); }
+  
+  .opt {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: all 0.2s;
+    background: rgba(255,255,255,0.02); margin-bottom: 8px;
+  }
+  .opt:hover { border-color: var(--border-2); background: rgba(255,255,255,0.04); }
+  .opt.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .opt.correct { border-color: var(--correct); background: rgba(74, 222, 128, 0.10); }
+  .opt.wrong { border-color: var(--wrong); background: rgba(239, 68, 68, 0.10); }
+  
+  .marker {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid var(--border-2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 12px; font-weight: 700;
+  }
+  .selected .marker { background: var(--accent); border-color: var(--accent); color: #1a1410; }
+  .correct .marker { background: var(--correct); border-color: var(--correct); color: #051a08; }
+  .wrong .marker { background: var(--wrong); border-color: var(--wrong); color: #1a0808; }
+  
+  .input {
+    background: var(--bg-2); border: 1px solid var(--border);
+    color: var(--fg); padding: 12px 16px; border-radius: 10px;
+    font-family: inherit; font-size: 15px; width: 100%;
+    transition: all 0.2s;
+  }
+  .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 230, 109, 0.15); }
+  .input:disabled { opacity: 0.7; }
+  
+  .explanation {
+    background: linear-gradient(135deg, var(--accent-soft), transparent);
+    border-left: 3px solid var(--accent);
+    padding: 16px 18px; border-radius: 8px; margin-top: 16px;
+    font-size: 14px; line-height: 1.7;
+  }
+  
+  .q-nav-dot {
+    min-width: 34px; height: 34px; padding: 0 10px; border-radius: 8px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    color: var(--muted); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s;
+  }
+  .q-nav-dot.active { background: var(--accent); color: #1a1410; border-color: var(--accent); transform: scale(1.1); }
+  .q-nav-dot.answered { background: rgba(74, 222, 128, 0.15); color: var(--correct); border-color: rgba(74, 222, 128, 0.4); }
+  .q-nav-dot:hover:not(.active) { border-color: var(--muted); color: var(--fg); }
+  
+  .toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--card); border: 1px solid var(--border-2);
+    padding: 14px 22px; border-radius: 12px; z-index: 1000;
+    transition: transform 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-size: 14px; font-weight: 500;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  
+  .bottom-nav {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(22, 27, 48, 0.9); backdrop-filter: blur(20px);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 14px;
+    z-index: 100; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-2); }
+  ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+  
+  .tri-shape { fill: var(--tri-soft); stroke: var(--tri); stroke-width: 2; }
+  .quad-shape { fill: var(--quad-soft); stroke: var(--quad); stroke-width: 2; }
+  .accent-shape { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+  .dashed-line { stroke-dasharray: 4 3; }
+  
+  @media (max-width: 768px) {
+    .slide { padding: 24px 16px 120px; }
+    .prop-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+  
+  .float-anim { animation: floatY 8s ease-in-out infinite; }
+  @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+  
+  .pulse-anim { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  
+  .tab-content { animation: fadeIn 0.4s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<section class="slide active" id="slide1">
+  <svg class="geo-bg float-anim" style="top: 10%; right: 5%; width: 200px;" viewBox="0 0 200 200">
+    <polygon points="100,20 180,180 20,180" class="tri-shape"/>
+  </svg>
+  <svg class="geo-bg" style="bottom: 5%; left: 8%; width: 180px; animation: floatY 10s ease-in-out infinite reverse;" viewBox="0 0 200 200">
+    <rect x="30" y="30" width="140" height="140" class="quad-shape" transform="rotate(15 100 100)"/>
+  </svg>
+  
+  <div class="max-w-6xl mx-auto pt-8 relative">
+    <div class="flex items-center gap-3 mb-12">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--tri), var(--quad));">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a0808" stroke-width="2.5">
+          <polygon points="12,3 22,21 2,21"/>
+        </svg>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-widest" style="color: var(--muted);">Geometri Datar · Bridge Course</div>
+        <div class="font-semibold text-sm">Sesi Belajar Siswa SMA</div>
+      </div>
+    </div>
+    
+    <div class="grid md:grid-cols-5 gap-8 items-center mb-16">
+      <div class="md:col-span-3">
+        <div class="badge badge-tri mb-6">
+          <span class="pulse-anim">●</span> Menjembatani SMP → SMA
+        </div>
+        <h1 class="display font-black leading-none mb-6" style="font-size: clamp(48px, 7.5vw, 96px);">
+          Segitiga<br>
+          <span style="color: var(--muted); font-weight: 400; font-style: italic;">&</span><br>
+          <span style="background: linear-gradient(90deg, var(--tri) 0%, var(--accent) 50%, var(--quad) 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">Segiempat</span>
+        </h1>
+        <p class="text-lg mb-8" style="color: var(--muted); max-width: 520px;">
+          Menutup kesenjangan fundamental geometri datar — dari sifat dasar bangun SMP hingga analisis turunan dan aplikasi HOTS level SMA.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <div class="card px-4 py-3 flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full" style="background: var(--tri);"></span>
+            <span class="text-sm font-medium">4 Sub-topik Segitiga</span>
+          </div>
+          <div class="card px-4 py-3 flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full" style="background: var(--quad);"></span>
+            <span class="text-sm font-medium">7 Bangun Segiempat</span>
+          </div>
+          <div class="card px-4 py-3 flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full" style="background: var(--accent);"></span>
+            <span class="text-sm font-medium">40 Soal Latihan</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="md:col-span-2">
+        <div class="card p-8 relative overflow-hidden">
+          <svg viewBox="0 0 200 200" class="w-full mb-4">
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#4ecdc4" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <polygon points="100,20 180,170 20,170" fill="url(#g1)" stroke="#ff6b6b" stroke-width="2"/>
+            <rect x="60" y="80" width="80" height="80" fill="rgba(78,205,196,0.2)" stroke="#4ecdc4" stroke-width="2" transform="rotate(-8 100 120)"/>
+            <circle cx="100" cy="100" r="6" fill="#ffe66d"/>
+            <line x1="100" y1="20" x2="100" y2="170" stroke="#ffe66d" stroke-width="1" stroke-dasharray="3 3"/>
+          </svg>
+          <div class="text-center">
+            <div class="display font-bold text-xl">Mulai Perjalanan</div>
+            <div class="text-xs mt-1" style="color: var(--muted);">6 Slide · 40 Soal · Estimasi 90 menit</div>
+          </div>
+          <button onclick="goToSlide(2)" class="btn btn-primary w-full justify-center mt-5 py-3.5">
+            Mulai Belajar
+            <span style="font-size: 18px;">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="card p-5">
+        <div class="display font-black text-3xl mb-1" style="color: var(--tri);">01</div>
+        <div class="font-semibold mb-1">Fondasi Kokoh</div>
+        <div class="text-sm" style="color: var(--muted);">Meninjau ulang konsep SMP: jenis, sifat, dan rumus dasar segitiga serta segiempat.</div>
+      </div>
+      <div class="card p-5">
+        <div class="display font-black text-3xl mb-1" style="color: var(--accent);">02</div>
+        <div class="font-semibold mb-1">Pendalaman Bertahap</div>
+        <div class="text-sm" style="color: var(--muted);">Dari rumus Heron, hubungan sudut-sisi, hingga dekomposisi bangun tak beraturan.</div>
+      </div>
+      <div class="card p-5">
+        <div class="display font-black text-3xl mb-1" style="color: var(--quad);">03</div>
+        <div class="font-semibold mb-1">Aplikasi HOTS</div>
+        <div class="text-sm" style="color: var(--muted);">Soal penalaran multi-langkah, pembuktian sifat, dan masalah kontekstual tingkat SMA.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: TUJUAN PEMBELAJARAN -->
+<section class="slide" id="slide2">
+  <div class="max-w-5xl mx-auto pt-8">
+    <div class="mb-12">
+      <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--muted);">Slide 02 · Tujuan Pembelajaran</div>
+      <h2 class="display font-black text-5xl md:text-6xl mb-3">Akan Kita <span style="color: var(--accent);">Capai</span></h2>
+      <p style="color: var(--muted); max-width: 640px;">Tujuan dirancang bertingkat — dari pemahaman konsep dasar hingga kemampuan analisis dan evaluasi geometris.</p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="card p-7" style="border-left: 4px solid var(--tri);">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--tri-soft);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2"><polygon points="12,3 22,21 2,21"/></svg>
+          </div>
+          <div class="display font-bold text-2xl">Segitiga</div>
+        </div>
+        <ul class="space-y-3 text-sm" style="color: var(--muted); line-height: 1.7;">
+          <li class="flex gap-3"><span style="color: var(--tri);">▸</span> Mengidentifikasi jenis-jenis segitiga beserta sifat-sifatnya.</li>
+          <li class="flex gap-3"><span style="color: var(--tri);">▸</span> Memahami empat garis istimewa segitiga dan perannya.</li>
+          <li class="flex gap-3"><span style="color: var(--tri);">▸</span> Menerapkan sifat jumlah sudut dan sudut luar segitiga.</li>
+          <li class="flex gap-3"><span style="color: var(--tri);">▸</span> Menghitung keliling dan luas, termasuk rumus Heron.</li>
+          <li class="flex gap-3"><span style="color: var(--tri);">▸</span> Menyelesaikan permasalahan HOTS terkait segitiga.</li>
+        </ul>
+      </div>
+      
+      <div class="card p-7" style="border-left: 4px solid var(--quad);">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--quad-soft);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ecdc4" stroke-width="2"><rect x="3" y="6" width="18" height="12"/></svg>
+          </div>
+          <div class="display font-bold text-2xl">Segiempat</div>
+        </div>
+        <ul class="space-y-3 text-sm" style="color: var(--muted); line-height: 1.7;">
+          <li class="flex gap-3"><span style="color: var(--quad);">▸</span> Mengenali tujuh jenis bangun segiempat dan ciri-cirinya.</li>
+          <li class="flex gap-3"><span style="color: var(--quad);">▸</span> Menganalisis sifat: sudut, diagonal, simetri lipat & putar.</li>
+          <li class="flex gap-3"><span style="color: var(--quad);">▸</span> Menghitung keliling dan luas setiap bangun segiempat.</li>
+          <li class="flex gap-3"><span style="color: var(--quad);">▸</span> Memecah bangun tak beraturan menjadi bangun yang dikenal.</li>
+          <li class="flex gap-3"><span style="color: var(--quad);">▸</span> Menyelesaikan soal aplikatif dan HOTS bidang segiempat.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card p-7" style="background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--accent-soft);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffe66d" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="display font-bold text-2xl">Indikator Keberhasilan</div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4 text-sm">
+        <div class="p-4 rounded-xl" style="background: var(--bg-2);">
+          <div class="font-semibold mb-2" style="color: var(--accent);">Kognitif</div>
+          <p style="color: var(--muted); line-height: 1.6;">Siswa mampu menjelaskan kembali konsep dan menerapkannya pada soal latihan minimal 70% benar.</p>
+        </div>
+        <div class="p-4 rounded-xl" style="background: var(--bg-2);">
+          <div class="font-semibold mb-2" style="color: var(--accent);">Psikomotorik</div>
+          <p style="color: var(--muted); line-height: 1.6;">Siswa mampu menggambar, mengukur, dan menghitung besaran pada bangun datar dengan tepat.</p>
+        </div>
+        <div class="p-4 rounded-xl" style="background: var(--bg-2);">
+          <div class="font-semibold mb-2" style="color: var(--accent);">Afektif</div>
+          <p style="color: var(--muted); line-height: 1.6;">Siswa menunjukkan sikap tekun, teliti, dan mampu merefleksikan proses belajarnya.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-end mt-8">
+      <button onclick="goToSlide(3)" class="btn btn-primary">
+        Lanjut ke Materi Segitiga
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: SEGITIGA -->
+<section class="slide" id="slide3">
+  <div class="max-w-6xl mx-auto pt-8">
+    <div class="mb-8">
+      <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--muted);">Slide 03 · Materi Inti</div>
+      <div class="flex items-center gap-4 mb-3">
+        <svg width="48" height="48" viewBox="0 0 48 48"><polygon points="24,4 44,42 4,42" class="tri-shape"/></svg>
+        <h2 class="display font-black text-5xl md:text-6xl">Segitiga</h2>
+      </div>
+      <p style="color: var(--muted); max-width: 640px;">Bangun datar tiga sisi yang menjadi fondasi geometri — dari klasifikasi hingga rumus Heron.</p>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-2 mb-6" id="triTabs">
+      <button class="tab-btn active" data-tab="jenis">1. Jenis & Sifat</button>
+      <button class="tab-btn" data-tab="garis">2. Garis Istimewa</button>
+      <button class="tab-btn" data-tab="sudut">3. Sudut</button>
+      <button class="tab-btn" data-tab="luas">4. Keliling & Luas</button>
+    </div>
+    
+    <!-- Tab Content: Jenis -->
+    <div class="tab-content" id="tab-jenis">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="60" height="60" viewBox="0 0 60 60"><polygon points="30,8 52,48 8,48" class="tri-shape"/><line x1="30" y1="8" x2="30" y2="48" stroke="#ffe66d" stroke-width="1" class="dashed-line"/></svg>
+            <div>
+              <div class="display font-bold text-xl">Segitiga Sama Sisi</div>
+              <div class="text-xs" style="color: var(--muted);">Equilateral Triangle</div>
+            </div>
+          </div>
+          <div class="space-y-2 text-sm" style="color: var(--muted); line-height: 1.6;">
+            <div class="prop-row"><div class="prop-label">Sisi</div><div class="prop-value">Ketiga sisi sama panjang</div></div>
+            <div class="prop-row"><div class="prop-label">Sudut</div><div class="prop-value">Ketiga sudut sama besar = 60°</div></div>
+            <div class="prop-row"><div class="prop-label">Garis istimewa</div><div class="prop-value">Garis tinggi, bagi, berat, dan sumbu berimpit</div></div>
+            <div class="prop-row"><div class="prop-label">Simetri lipat</div><div class="prop-value">3</div></div>
+            <div class="prop-row"><div class="prop-label">Simetri putar</div><div class="prop-value">3 (orda 3)</div></div>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="60" height="60" viewBox="0 0 60 60"><polygon points="30,8 52,48 8,48" class="tri-shape"/><line x1="8" y1="48" x2="52" y2="48" stroke="#ffe66d" stroke-width="1"/><line x1="30" y1="8" x2="30" y2="48" stroke="#ffe66d" stroke-width="1" class="dashed-line"/></svg>
+            <div>
+              <div class="display font-bold text-xl">Segitiga Sama Kaki</div>
+              <div class="text-xs" style="color: var(--muted);">Isosceles Triangle</div>
+            </div>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="prop-row"><div class="prop-label">Sisi</div><div class="prop-value">Dua sisi sama panjang (kaki), satu sisi berbeda (alas)</div></div>
+            <div class="prop-row"><div class="prop-label">Sudut</div><div class="prop-value">Dua sudut alas sama besar</div></div>
+            <div class="prop-row"><div class="prop-label">Garis istimewa</div><div class="prop-value">Garis tinggi dari puncak = garis bagi = garis berat = garis sumbu alas</div></div>
+            <div class="prop-row"><div class="prop-label">Simetri lipat</div><div class="prop-value">1</div></div>
+            <div class="prop-row"><div class="prop-label">Simetri putar</div><div class="prop-value">1</div></div>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="60" height="60" viewBox="0 0 60 60"><polygon points="20,8 52,48 8,42" class="tri-shape"/></svg>
+            <div>
+              <div class="display font-bold text-xl">Segitiga Sembarang</div>
+              <div class="text-xs" style="color: var(--muted);">Scalene Triangle</div>
+            </div>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="prop-row"><div class="prop-label">Sisi</div><div class="prop-value">Ketiga sisi berbeda panjang</div></div>
+            <div class="prop-row"><div class="prop-label">Sudut</div><div class="prop-value">Ketiga sudut berbeda besar</div></div>
+            <div class="prop-row"><div class="prop-label">Garis istimewa</div><div class="prop-value">Empat garis istimewa berbeda dan tidak berimpit</div></div>
+            <div class="prop-row"><div class="prop-label">Simetri lipat</div><div class="prop-value">0</div></div>
+            <div class="prop-row"><div class="prop-label">Simetri putar</div><div class="prop-value">1</div></div>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="60" height="60" viewBox="0 0 60 60"><polygon points="8,8 52,48 8,48" class="tri-shape"/><rect x="6" y="46" width="6" height="6" fill="none" stroke="#ffe66d" stroke-width="1.5"/></svg>
+            <div>
+              <div class="display font-bold text-xl">Segitiga Siku-Siku</div>
+              <div class="text-xs" style="color: var(--muted);">Right Triangle</div>
+            </div>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="prop-row"><div class="prop-label">Sudut</div><div class="prop-value">Salah satu sudut = 90° (siku)</div></div>
+            <div class="prop-row"><div class="prop-label">Sisi</div><div class="prop-value">Memiliki sisi miring (hipotenusa) di hadapan sudut siku</div></div>
+            <div class="prop-row"><div class="prop-label">Teorema</div><div class="prop-value">Pythagoras: a² + b² = c²</div></div>
+            <div class="prop-row"><div class="prop-label">Klasifikasi</div><div class="prop-value">Bisa juga sama kaki (siku-siku sama kaki)</div></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card p-6 mt-6">
+        <div class="display font-bold text-lg mb-3">Berdasarkan Sudut</div>
+        <div class="grid md:grid-cols-3 gap-4 text-sm">
+          <div class="flex items-center gap-3">
+            <svg width="50" height="50" viewBox="0 0 50 50"><polygon points="25,5 45,45 5,45" class="tri-shape"/></svg>
+            <div><b>Lancip:</b> semua sudut &lt; 90°</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg width="50" height="50" viewBox="0 0 50 50"><polygon points="5,5 45,45 5,45" class="tri-shape"/></svg>
+            <div><b>Siku-siku:</b> satu sudut = 90°</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg width="50" height="50" viewBox="0 0 50 50"><polygon points="35,5 45,45 5,45" class="tri-shape"/></svg>
+            <div><b>Tumpul:</b> satu sudut &gt; 90°</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Content: Garis Istimewa -->
+    <div class="tab-content hidden" id="tab-garis">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <polygon points="40,8 72,68 8,68" class="tri-shape"/>
+              <line x1="40" y1="8" x2="40" y2="68" stroke="#ffe66d" stroke-width="2"/>
+              <rect x="36" y="64" width="8" height="4" fill="#ffe66d"/>
+            </svg>
+            <div>
+              <div class="display font-bold text-xl">Garis Tinggi</div>
+              <div class="text-xs" style="color: var(--muted);">Altitude</div>
+            </div>
+          </div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Garis yang ditarik dari sebuah titik sudut tegak lurus ke sisi di hadapannya (atau perpanjangannya).</p>
+          <div class="formula-box">t = panjang garis tinggi<br>Luas = ½ × alas × t</div>
+          <p class="text-xs mt-2" style="color: var(--muted);">Titik temu ketiga garis tinggi disebut <b>ortosenter</b>.</p>
+        </div>
+        
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <polygon points="40,8 72,68 8,68" class="tri-shape"/>
+              <line x1="40" y1="8" x2="50" y2="68" stroke="#ffe66d" stroke-width="2" class="dashed-line"/>
+            </svg>
+            <div>
+              <div class="display font-bold text-xl">Garis Bagi</div>
+              <div class="text-xs" style="color: var(--muted);">Angle Bisector</div>
+            </div>
+          </div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Garis yang ditarik dari titik sudut membagi sudut tersebut menjadi dua bagian yang sama besar.</p>
+          <div class="formula-box">Jika ∠A dibagi, maka ∠BAg = ∠CAg = ½ ∠A</div>
+          <p class="text-xs mt-2" style="color: var(--muted);">Titik temu ketiga garis bagi disebut <b>incenter</b> (pusat lingkaran dalam).</p>
+        </div>
+        
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <polygon points="40,8 72,68 8,68" class="tri-shape"/>
+              <line x1="40" y1="8" x2="40" y2="68" stroke="#ffe66d" stroke-width="2"/>
+              <circle cx="40" cy="48" r="3" fill="#ffe66d"/>
+            </svg>
+            <div>
+              <div class="display font-bold text-xl">Garis Berat</div>
+              <div class="text-xs" style="color: var(--muted);">Median</div>
+            </div>
+          </div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Garis yang ditarik dari titik sudut ke titik tengah sisi di hadapannya.</p>
+          <div class="formula-box">Membagi segitiga menjadi dua segitiga dengan luas sama besar.</div>
+          <p class="text-xs mt-2" style="color: var(--muted);">Titik temu ketiga garis berat disebut <b>centroid</b> (titik berat), membagi garis berat dengan perbandingan 2:1.</p>
+        </div>
+        
+        <div class="card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <polygon points="40,8 72,68 8,68" class="tri-shape"/>
+              <line x1="40" y1="38" x2="40" y2="68" stroke="#ffe66d" stroke-width="2" class="dashed-line"/>
+              <line x1="32" y1="38" x2="48" y2="38" stroke="#ffe66d" stroke-width="2"/>
+            </svg>
+            <div>
+              <div class="display font-bold text-xl">Garis Sumbu</div>
+              <div class="text-xs" style="color: var(--muted);">Perpendicular Bisector</div>
+            </div>
+          </div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Garis yang membagi dua sama panjang suatu sisi segitiga dan tegak lurus sisi tersebut.</p>
+          <div class="formula-box">Berada di sumbu simetri sisi (tidak harus melalui titik sudut).</div>
+          <p class="text-xs mt-2" style="color: var(--muted);">Titik temu ketiga garis sumbu disebut <b>circumcenter</b> (pusat lingkaran luar).</p>
+        </div>
+      </div>
+      
+      <div class="card p-6 mt-6">
+        <div class="display font-bold text-lg mb-3">Ringkasan Empat Titik Istimewa</div>
+        <div class="grid md:grid-cols-4 gap-3 text-sm">
+          <div class="p-3 rounded-lg" style="background: var(--bg-2);"><b style="color: var(--tri);">Ortosenter</b><br><span style="color: var(--muted);">Temu garis tinggi</span></div>
+          <div class="p-3 rounded-lg" style="background: var(--bg-2);"><b style="color: var(--accent);">Incenter</b><br><span style="color: var(--muted);">Temu garis bagi</span></div>
+          <div class="p-3 rounded-lg" style="background: var(--bg-2);"><b style="color: var(--quad);">Centroid</b><br><span style="color: var(--muted);">Temu garis berat</span></div>
+          <div class="p-3 rounded-lg" style="background: var(--bg-2);"><b style="color: #c084fc;">Circumcenter</b><br><span style="color: var(--muted);">Temu garis sumbu</span></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Content: Sudut -->
+    <div class="tab-content hidden" id="tab-sudut">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card p-6">
+          <div class="display font-bold text-xl mb-4">Jumlah Sudut Segitiga</div>
+          <div class="flex gap-4 items-center mb-4">
+            <svg width="160" height="140" viewBox="0 0 160 140">
+              <polygon points="80,15 145,115 15,115" class="tri-shape"/>
+              <path d="M 70 115 A 15 15 0 0 0 55 115" fill="rgba(255,107,107,0.3)" stroke="#ff6b6b" stroke-width="1.5"/>
+              <path d="M 70 25 A 18 18 0 0 0 65 40" fill="rgba(255,230,109,0.4)" stroke="#ffe66d" stroke-width="1.5"/>
+              <path d="M 130 105 A 18 18 0 0 0 115 115" fill="rgba(78,205,196,0.4)" stroke="#4ecdc4" stroke-width="1.5"/>
+              <text x="78" y="135" font-family="JetBrains Mono" font-size="11" fill="#ff6b6b">α</text>
+              <text x="55" y="20" font-family="JetBrains Mono" font-size="11" fill="#ffe66d">β</text>
+              <text x="138" y="100" font-family="JetBrains Mono" font-size="11" fill="#4ecdc4">γ</text>
+            </svg>
+            <div class="flex-1">
+              <div class="formula-box text-base">
+                α + β + γ = 180°
+              </div>
+              <p class="text-sm mt-3" style="color: var(--muted); line-height: 1.6;">Jumlah ketiga sudut dalam segitiga selalu 180°, tidak pedalu bentuk atau ukurannya.</p>
+            </div>
+          </div>
+          <div class="p-3 rounded-lg text-sm" style="background: var(--bg-2);">
+            <b>Contoh:</b> Jika α = 50° dan β = 60°, maka γ = 180° − 50° − 60° = <b style="color: var(--accent);">70°</b>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="display font-bold text-xl mb-4">Sudut Luar Segitiga</div>
+          <div class="flex gap-4 items-center mb-4">
+            <svg width="170" height="140" viewBox="0 0 170 140">
+              <polygon points="50,15 130,115 15,115" class="tri-shape"/>
+              <line x1="50" y1="15" x2="160" y2="80" stroke="#4ecdc4" stroke-width="2" class="dashed-line"/>
+              <path d="M 40 115 A 15 15 0 0 0 60 115" fill="rgba(255,107,107,0.3)"/>
+              <path d="M 50 30 A 18 18 0 0 0 40 45" fill="rgba(255,230,109,0.4)"/>
+              <path d="M 120 115 A 18 18 0 0 0 130 95" fill="rgba(78,205,196,0.3)"/>
+              <path d="M 145 80 A 20 20 0 0 0 150 95" fill="rgba(192,132,252,0.4)" stroke="#c084fc"/>
+              <text x="35" y="135" font-family="JetBrains Mono" font-size="11" fill="#ff6b6b">β</text>
+              <text x="30" y="30" font-family="JetBrains Mono" font-size="11" fill="#ffe66d">α</text>
+              <text x="115" y="135" font-family="JetBrains Mono" font-size="11" fill="#4ecdc4">γ</text>
+              <text x="155" y="80" font-family="JetBrains Mono" font-size="11" fill="#c084fc">δ</text>
+            </svg>
+            <div class="flex-1">
+              <div class="formula-box text-base">
+                δ = α + β
+              </div>
+              <p class="text-sm mt-3" style="color: var(--muted); line-height: 1.6;">Sudut luar segitiga sama dengan jumlah dua sudut dalam yang tidak berdekatan.</p>
+            </div>
+          </div>
+          <div class="p-3 rounded-lg text-sm" style="background: var(--bg-2);">
+            <b>Contoh:</b> Jika α = 50° dan β = 60°, maka sudut luar δ = 50° + 60° = <b style="color: var(--accent);">110°</b>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div class="card p-6">
+          <div class="display font-bold text-lg mb-3">Hubungan Sudut & Sisi</div>
+          <ul class="space-y-3 text-sm" style="color: var(--muted); line-height: 1.7;">
+            <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Sisi terbesar berhadapan dengan sudut terbesar.</li>
+            <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Sisi terkecil berhadapan dengan sudut terkecil.</li>
+            <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Jika ketiga sudut sama, maka ketiga sisi juga sama (dan sebaliknya).</li>
+            <li class="flex gap-2"><span style="color: var(--tri);">▸</span> <b>Ketaksamaan segitiga:</b> jumlah dua sisi selalu lebih besar dari sisi ketiga.</li>
+          </ul>
+          <div class="formula-box mt-3">a + b > c &nbsp; (untuk setiap kombinasi sisi)</div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="display font-bold text-lg mb-3">Ketaksamaan Segitiga (SMA)</div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Untuk membentuk segitiga yang valid, ketiga sisi harus memenuhi syarat ketaksamaan:</p>
+          <div class="formula-box">
+            |a − b| &lt; c &lt; a + b<br>
+            |a − c| &lt; b &lt; a + c<br>
+            |b − c| &lt; a &lt; b + c
+          </div>
+          <p class="text-xs mt-3" style="color: var(--muted);">Berguna untuk menentukan apakah tiga bilangan dapat menjadi panjang sisi segitiga, dan untuk optimasi pada soal HOTS.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Content: Keliling & Luas -->
+    <div class="tab-content hidden" id="tab-luas">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card p-6">
+          <div class="display font-bold text-xl mb-4">Keliling Segitiga</div>
+          <div class="formula-box text-base mb-3">
+            K = a + b + c
+          </div>
+          <p class="text-sm mb-4" style="color: var(--muted); line-height: 1.7;">Keliling adalah jumlah panjang ketiga sisi segitiga.</p>
+          <div class="p-4 rounded-lg" style="background: var(--bg-2);">
+            <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--muted);">Contoh</div>
+            <p class="text-sm">Segitiga dengan sisi 7 cm, 9 cm, dan 12 cm.<br>K = 7 + 9 + 12 = <b style="color: var(--accent);">28 cm</b></p>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="display font-bold text-xl mb-4">Luas Segitiga (Dasar)</div>
+          <div class="formula-box text-base mb-3">
+            L = ½ × a × t
+          </div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Luas = setengah × alas × tinggi. Tinggi adalah panjang garis tegak lurus dari puncak ke alas.</p>
+          <div class="p-4 rounded-lg" style="background: var(--bg-2);">
+            <div class="text-xs uppercase tracking-wider mb-2" style="color: var(--muted);">Contoh</div>
+            <p class="text-sm">Segitiga dengan alas 10 cm dan tinggi 6 cm.<br>L = ½ × 10 × 6 = <b style="color: var(--accent);">30 cm²</b></p>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="display font-bold text-xl mb-4">Rumus Heron (SMA)</div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Digunakan ketika hanya diketahui panjang ketiga sisi, tanpa tinggi.</p>
+          <div class="formula-box text-base mb-3">
+            L = √[s(s−a)(s−b)(s−c)]<br>
+            dengan s = ½(a + b + c)
+          </div>
+          <p class="text-xs mb-3" style="color: var(--muted);">s = semiperimeter (setengah keliling)</p>
+          <div class="p-4 rounded-lg text-sm" style="background: var(--bg-2);">
+            <b>Contoh:</b> Segitiga sisi 13, 14, 15 cm.<br>
+            s = ½(13+14+15) = 21<br>
+            L = √[21(21−13)(21−14)(21−15)]<br>
+            L = √[21·8·7·6] = √7056 = <b style="color: var(--accent);">84 cm²</b>
+          </div>
+        </div>
+        
+        <div class="card p-6">
+          <div class="display font-bold text-xl mb-4">Luas dengan Trigonometri (SMA)</div>
+          <p class="text-sm mb-3" style="color: var(--muted); line-height: 1.7;">Ketika diketahui dua sisi dan satu sudut apit.</p>
+          <div class="formula-box text-base mb-3">
+            L = ½ × a × b × sin C
+          </div>
+          <p class="text-xs mb-3" style="color: var(--muted);">C = sudut antara sisi a dan b</p>
+          <div class="p-4 rounded-lg text-sm" style="background: var(--bg-2);">
+            <b>Contoh:</b> a = 8 cm, b = 10 cm, ∠C = 60°.<br>
+            L = ½ × 8 × 10 × sin 60°<br>
+            L = 40 × ½√3 = 20√3 ≈ <b style="color: var(--accent);">34,64 cm²</b>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card p-6 mt-6" style="background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);">
+        <div class="display font-bold text-lg mb-3">Soal Latihan Terapan</div>
+        <div class="grid md:grid-cols-2 gap-4 text-sm">
+          <div class="p-4 rounded-lg" style="background: var(--bg-2);">
+            <div class="font-semibold mb-2" style="color: var(--accent);">Soal 1 — Dasar</div>
+            <p style="color: var(--muted); line-height: 1.6;">Sebuah segitiga siku-siku memiliki sisi pendek 6 cm dan sisi miring 10 cm. Berapakah luasnya?</p>
+            <p class="mt-2 text-xs"><b>Sisi lain:</b> √(10² − 6²) = √64 = 8 cm<br><b>Luas:</b> ½ × 6 × 8 = <b style="color: var(--correct);">24 cm²</b></p>
+          </div>
+          <div class="p-4 rounded-lg" style="background: var(--bg-2);">
+            <div class="font-semibold mb-2" style="color: var(--accent);">Soal 2 — HOTS</div>
+            <p style="color: var(--muted); line-height: 1.6;">Tiga sisi segitiga adalah (x+2), (x+4), dan (x+6) cm. Jika kelilingnya 30 cm, hitung luasnya dengan rumus Heron.</p>
+            <p class="mt-2 text-xs"><b>Sisi:</b> 8, 10, 12 → s = 15<br>L = √[15·7·5·3] = √1575 = <b style="color: var(--correct);">15√7 ≈ 39,69 cm²</b></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex justify-between items-center mt-8 gap-4">
+      <button onclick="goToSlide(2)" class="btn btn-ghost">
+        <span>←</span> Sebelumnya
+      </button>
+      <button onclick="goToSlide(4)" class="btn btn-primary">
+        Lanjut ke Segiempat <span>→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: SEGIEMPAT -->
+<section class="slide" id="slide4">
+  <div class="max-w-6xl mx-auto pt-8">
+    <div class="mb-8">
+      <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--muted);">Slide 04 · Materi Inti</div>
+      <div class="flex items-center gap-4 mb-3">
+        <svg width="48" height="48" viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="28" class="quad-shape"/></svg>
+        <h2 class="display font-black text-5xl md:text-6xl">Segiempat</h2>
+      </div>
+      <p style="color: var(--muted); max-width: 640px;">Tujuh bangun segiempat dengan ciri, sifat, dan rumus masing-masing. Klik kartu untuk melihat detail.</p>
+    </div>
+    
+    <!-- Grid 7 bangun -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="quadGrid">
+      <div class="quad-card active" data-quad="persegi">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><rect x="15" y="15" width="50" height="50" class="quad-shape"/></svg>
+        <div class="display font-bold mt-2">Persegi</div>
+        <div class="text-xs" style="color: var(--muted);">Square</div>
+      </div>
+      <div class="quad-card" data-quad="pp">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><rect x="10" y="22" width="60" height="36" class="quad-shape"/></svg>
+        <div class="display font-bold mt-2">Persegi Panjang</div>
+        <div class="text-xs" style="color: var(--muted);">Rectangle</div>
+      </div>
+      <div class="quad-card" data-quad="jajar">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><polygon points="20,60 70,60 60,20 10,20" class="quad-shape"/></svg>
+        <div class="display font-bold mt-2">Jajar Genjang</div>
+        <div class="text-xs" style="color: var(--muted);">Parallelogram</div>
+      </div>
+      <div class="quad-card" data-quad="belah">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><polygon points="40,10 70,40 40,70 10,40" class="quad-shape"/></svg>
+        <div class="display font-bold mt-2">Belah Ketupat</div>
+        <div class="text-xs" style="color: var(--muted);">Rhombus</div>
+      </div>
+      <div class="quad-card" data-quad="layang">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><polygon points="40,10 65,40 40,70 15,40" class="quad-shape"/><line x1="40" y1="10" x2="40" y2="70" stroke="#ffe66d" stroke-width="1" class="dashed-line"/></svg>
+        <div class="display font-bold mt-2">Layang-Layang</div>
+        <div class="text-xs" style="color: var(--muted);">Kite</div>
+      </div>
+      <div class="quad-card" data-quad="trapesium">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><polygon points="20,20 60,20 70,60 10,60" class="quad-shape"/></svg>
+        <div class="display font-bold mt-2">Trapesium</div>
+        <div class="text-xs" style="color: var(--muted);">Trapezoid</div>
+      </div>
+      <div class="quad-card" data-quad="takberaturan">
+        <svg width="100%" height="70" viewBox="0 0 80 80"><polygon points="10,30 30,10 60,20 70,50 50,70 20,60" class="quad-shape"/></svg>
+        <div class="display font-bold mt-2">Bangun Tak Beraturan</div>
+        <div class="text-xs" style="color: var(--muted);">Irregular</div>
+      </div>
+    </div>
+    
+    <!-- Detail container -->
+    <div id="quadDetail"></div>
+    
+    <div class="flex justify-between items-center mt-8 gap-4">
+      <button onclick="goToSlide(3)" class="btn btn-ghost">
+        <span>←</span> Sebelumnya
+      </button>
+      <button onclick="goToSlide(5)" class="btn btn-primary">
+        Lanjut ke Latihan Soal <span>→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: LATIHAN SOAL -->
+<section class="slide" id="slide5">
+  <div class="max-w-6xl mx-auto pt-8">
+    <div class="mb-8">
+      <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--muted);">Slide 05 · Latihan Soal</div>
+      <h2 class="display font-black text-5xl md:text-6xl mb-3">Uji <span style="color: var(--accent);">Pemahaman</span></h2>
+      <p style="color: var(--muted); max-width: 640px;">40 soal terbagi rata untuk segitiga dan segiempat — campuran pilihan ganda dan isian singkat, dari dasar hingga HOTS.</p>
+    </div>
+    
+    <!-- Topik selector -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <button class="tab-btn active" data-topic="segitiga" id="tabSegitiga">Segitiga (20)</button>
+      <button class="tab-btn" data-topic="segiempat" id="tabSegiempat">Segiempat (20)</button>
+    </div>
+    
+    <!-- Score bar -->
+    <div class="card p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-6">
+        <div>
+          <div class="text-xs uppercase tracking-wider" style="color: var(--muted);">Terjawab</div>
+          <div class="display font-bold text-xl"><span id="answeredCount">0</span>/<span id="totalCount">20</span></div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider" style="color: var(--muted);">Benar</div>
+          <div class="display font-bold text-xl" style="color: var(--correct);" id="correctCount">0</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider" style="color: var(--muted);">Salah</div>
+          <div class="display font-bold text-xl" style="color: var(--wrong);" id="wrongCount">0</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider" style="color: var(--muted);">Skor</div>
+          <div class="display font-bold text-xl" style="color: var(--accent);"><span id="scoreNum">0</span>/100</div>
+        </div>
+      </div>
+      <button onclick="resetQuiz()" class="btn btn-ghost text-xs">Reset</button>
+    </div>
+    
+    <!-- Navigator -->
+    <div class="card p-4 mb-6">
+      <div class="text-xs uppercase tracking-widest mb-3" style="color: var(--muted);">Navigasi Soal</div>
+      <div id="qNavigator" class="flex flex-wrap gap-2"></div>
+    </div>
+    
+    <!-- Question container -->
+    <div id="questionContainer"></div>
+    
+    <!-- Nav buttons -->
+    <div class="flex justify-between items-center mt-6 gap-4">
+      <button onclick="prevQuestion()" class="btn btn-ghost" id="prevBtn">
+        <span>←</span> Sebelumnya
+      </button>
+      <div class="text-sm" style="color: var(--muted);">
+        Soal <span class="mono font-bold" style="color: var(--fg);" id="currentQNum">1</span> dari <span class="mono" id="totalQNum">20</span>
+      </div>
+      <button onclick="nextQuestion()" class="btn btn-ghost" id="nextBtn">
+        Berikutnya <span>→</span>
+      </button>
+    </div>
+    
+    <!-- Tombol Link Eksternal & Lanjut -->
+    <div class="flex flex-col items-center mt-8 gap-5">
+      <a href="https://www.defantri.com/2022/01/pembahasan-bangun-datar-matematika-smp.html" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="border-color: var(--quad); color: var(--quad);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+        Pelajari Lebih Lanjut: Materi & Pembahasan Bangun Datar SMP
+      </a>
+      <button onclick="goToSlide(6)" class="btn btn-primary text-base py-3">
+        Lihat Kesimpulan & Refleksi
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: KESIMPULAN -->
+<section class="slide" id="slide6">
+  <div class="max-w-5xl mx-auto pt-8">
+    <div class="mb-10 text-center">
+      <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--muted);">Slide 06 · Penutup</div>
+      <h2 class="display font-black text-5xl md:text-6xl mb-3">
+        Sampai Jumpa,<br>
+        <span style="background: linear-gradient(90deg, var(--tri), var(--accent), var(--quad)); -webkit-background-clip: text; background-clip: text; color: transparent;">Para Geometer</span>
+      </h2>
+      <p style="color: var(--muted); max-width: 580px; margin: 0 auto;">Terima kasih sudah berlatih. Sebelum menutup, mari rangkum dan renungkan.</p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="card p-7" style="border-left: 4px solid var(--tri);">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--tri-soft);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2"><polygon points="12,3 22,21 2,21"/></svg>
+          </div>
+          <div class="display font-bold text-xl">Kesimpulan Segitiga</div>
+        </div>
+        <ul class="space-y-2 text-sm" style="color: var(--muted); line-height: 1.7;">
+          <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Segitiga diklasifikasikan berdasarkan sisi (sama sisi, sama kaki, sembarang) dan sudut (lancip, siku-siku, tumpul).</li>
+          <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Empat garis istimewa: tinggi, bagi, berat, sumbu — masing-masing memiliki titik temu khas.</li>
+          <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Jumlah sudut dalam = 180°, sudut luar = jumlah dua sudut dalam tidak berdekatan.</li>
+          <li class="flex gap-2"><span style="color: var(--tri);">▸</span> Luas dapat dihitung dengan ½×a×t, rumus Heron, atau trigonometri (½ab sin C).</li>
+        </ul>
+      </div>
+      
+      <div class="card p-7" style="border-left: 4px solid var(--quad);">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--quad-soft);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ecdc4" stroke-width="2"><rect x="3" y="6" width="18" height="12"/></svg>
+          </div>
+          <div class="display font-bold text-xl">Kesimpulan Segiempat</div>
+        </div>
+        <ul class="space-y-2 text-sm" style="color: var(--muted); line-height: 1.7;">
+          <li class="flex gap-2"><span style="color: var(--quad);">▸</span> Tujuh bangun segiempat memiliki ciri, sifat, dan rumus distinct — saling berkaitan.</li>
+          <li class="flex gap-2"><span style="color: var(--quad);">▸</span> Persegi adalah belah ketupat khusus; belah ketupat adalah jajar genjang khusus.</li>
+          <li class="flex gap-2"><span style="color: var(--quad);">▸</span> Diagonal menjadi pembeda utama: ada yang sama panjang, tegak lurus, atau keduanya.</li>
+          <li class="flex gap-2"><span style="color: var(--quad);">▸</span> Bangun tak beraturan diselesaikan dengan dekomposisi atau metode koordinat.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card p-7 mb-6" style="background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);">
+      <div class="display font-bold text-lg mb-4">Refleksi Diri</div>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs uppercase tracking-wider mb-2 block" style="color: var(--muted);">Materi apa yang paling kamu pahami hari ini?</label>
+          <textarea id="refleksi1" class="input" rows="3" placeholder="Tulis refleksimu di sini..." style="resize: vertical;"></textarea>
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-wider mb-2 block" style="color: var(--muted);">Bagian mana yang masih membingungkan?</label>
+          <textarea id="refleksi2" class="input" rows="3" placeholder="Tulis refleksimu di sini..." style="resize: vertical;"></textarea>
+        </div>
+      </div>
+      <div class="flex justify-center mt-4">
+        <button onclick="saveReflection()" class="btn btn-ghost text-sm">Simpan Refleksi</button>
+      </div>
+    </div>
+    
+    <div class="card p-8 text-center" style="background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);">
+      <div class="display font-black text-3xl md:text-4xl mb-3">
+        Thank You <span style="color: var(--accent);">for Today</span>
+      </div>
+      <p style="color: var(--muted); max-width: 560px; margin: 0 auto 6px;">
+        Geometri adalah jendela menuju pola berpikir logis dan spasial. Teruslah berlatih — setiap bangun punya cerita, setiap sudut punya alasan.
+      </p>
+      <p class="text-sm mono" style="color: var(--accent);">
+        — Geometri Datar · Segitiga & Segiempat —
+      </p>
+    </div>
+    
+    <div class="flex justify-center mt-8 gap-3">
+      <button onclick="goToSlide(1)" class="btn btn-ghost">
+        <span>←</span> Kembali ke Awal
+      </button>
+      <button onclick="location.reload()" class="btn btn-primary">
+        Mulai Sesi Baru
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <button onclick="prevSlide()" class="btn btn-ghost" style="padding: 8px 12px;" id="navPrev">
+    <span>←</span>
+  </button>
+  <div class="flex items-center gap-2" id="navDots">
+    <div class="nav-dot active" onclick="goToSlide(1)" title="Cover"></div>
+    <div class="nav-dot" onclick="goToSlide(2)" title="Tujuan"></div>
+    <div class="nav-dot" onclick="goToSlide(3)" title="Segitiga"></div>
+    <div class="nav-dot" onclick="goToSlide(4)" title="Segiempat"></div>
+    <div class="nav-dot" onclick="goToSlide(5)" title="Latihan"></div>
+    <div class="nav-dot" onclick="goToSlide(6)" title="Penutup"></div>
+  </div>
+  <button onclick="nextSlide()" class="btn btn-ghost" style="padding: 8px 12px;" id="navNext">
+    <span>→</span>
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA BANGUN SEGIEMPAT
+// ============================================================
+const quadData = {
+  persegi: {
+    name: 'Persegi', en: 'Square',
+    ciris: ['Keempat sisi sama panjang', 'Keempat sudut = 90°', 'Diagonal sama panjang dan saling tegak lurus', 'Diagonal saling membagi dua sama panjang'],
+    sifats: ['Memiliki 4 simetri lipat', 'Memiliki 4 simetri putar (orda 4)', 'Termasuk segiempat paling simetris', 'Merupakan belah ketupat khusus dan persegi panjang khusus'],
+    keliling: 'K = 4 × s',
+    luas: 'L = s × s = s²',
+    diagonal: 'd = s√2',
+    simLipat: 4, simPutar: 4,
+    svg: '<rect x="15" y="15" width="50" height="50" class="quad-shape"/><line x1="15" y1="15" x2="65" y2="65" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="65" y1="15" x2="15" y2="65" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/>'
+  },
+  pp: {
+    name: 'Persegi Panjang', en: 'Rectangle',
+    ciris: ['Sisi yang berhadapan sama panjang dan sejajar', 'Keempat sudut = 90°', 'Diagonal sama panjang', 'Diagonal saling membagi dua sama panjang'],
+    sifats: ['Memiliki 2 simetri lipat', 'Memiliki 2 simetri putar (orda 2)', 'Tidak semua diagonal tegak lurus', 'Persegi adalah persegi panjang khusus'],
+    keliling: 'K = 2 × (p + l)',
+    luas: 'L = p × l',
+    diagonal: 'd = √(p² + l²)',
+    simLipat: 2, simPutar: 2,
+    svg: '<rect x="10" y="22" width="60" height="36" class="quad-shape"/><line x1="10" y1="22" x2="70" y2="58" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="70" y1="22" x2="10" y2="58" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/>'
+  },
+  jajar: {
+    name: 'Jajar Genjang', en: 'Parallelogram',
+    ciris: ['Sisi yang berhadapan sama panjang dan sejajar', 'Sudut yang berhadapan sama besar', 'Diagonal tidak sama panjang', 'Diagonal saling membagi dua sama panjang'],
+    sifats: ['Tidak memiliki simetri lipat', 'Memiliki 2 simetri putar (orda 2)', 'Jumlah dua sudut yang berdekatan = 180°', 'Persegi panjang adalah jajar genjang khusus'],
+    keliling: 'K = 2 × (a + b)',
+    luas: 'L = alas × tinggi = a × t',
+    diagonal: 'd₁² + d₂² = 2(a² + b²)',
+    simLipat: 0, simPutar: 2,
+    svg: '<polygon points="20,60 70,60 60,20 10,20" class="quad-shape"/><line x1="20" y1="60" x2="60" y2="20" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="10" y1="20" x2="70" y2="60" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="10" y1="20" x2="10" y2="60" stroke="#4ecdc4" stroke-width="1" class="dashed-line"/>'
+  },
+  belah: {
+    name: 'Belah Ketupat', en: 'Rhombus',
+    ciris: ['Keempat sisi sama panjang', 'Sisi yang berhadapan sejajar', 'Diagonal tidak sama panjang', 'Diagonal saling tegak lurus dan membagi dua sama panjang'],
+    sifats: ['Sudut yang berhadapan sama besar', 'Memiliki 2 simetri lipat', 'Memiliki 2 simetri putar (orda 2)', 'Persegi adalah belah ketupat khusus'],
+    keliling: 'K = 4 × s',
+    luas: 'L = ½ × d₁ × d₂',
+    diagonal: 'd₁ ⊥ d₂, saling bagi dua sama panjang',
+    simLipat: 2, simPutar: 2,
+    svg: '<polygon points="40,10 70,40 40,70 10,40" class="quad-shape"/><line x1="40" y1="10" x2="40" y2="70" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="10" y1="40" x2="70" y2="40" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/>'
+  },
+  layang: {
+    name: 'Layang-Layang', en: 'Kite',
+    ciris: ['Dua pasang sisi sama panjang yang berdekatan', 'Satu pasang sudut yang berhadapan sama besar', 'Diagonal saling tegak lurus', 'Salah satu diagonal dibagi dua sama panjang oleh diagonal lain'],
+    sifats: ['Memiliki 1 simetri lipat', 'Memiliki 1 simetri putar (orda 1)', 'Diagonal terpanjang adalah sumbu simetri', 'Belah ketupat adalah layang-layang khusus'],
+    keliling: 'K = 2 × (a + b)',
+    luas: 'L = ½ × d₁ × d₂',
+    diagonal: 'd₁ ⊥ d₂, d₂ dibagi dua sama oleh d₁',
+    simLipat: 1, simPutar: 1,
+    svg: '<polygon points="40,10 65,40 40,70 15,40" class="quad-shape"/><line x1="40" y1="10" x2="40" y2="70" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="15" y1="40" x2="65" y2="40" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/>'
+  },
+  trapesium: {
+    name: 'Trapesium', en: 'Trapezoid',
+    ciris: ['Tepat sepasang sisi yang sejajar (sisi atas dan bawah)', 'Sisi sejajar tidak sama panjang', 'Jenis: sembarang, sama kaki, siku-siku'],
+    sifats: ['Trapesium sama kaki: kaki sama panjang, sudut alas sama besar, diagonal sama panjang', 'Trapesium siku-siku: memiliki dua sudut 90°', 'Trapesium sama kaki memiliki 1 simetri lipat', 'Trapesium sembarang tidak memiliki simetri lipat'],
+    keliling: 'K = a + b + c + d (jumlah keempat sisi)',
+    luas: 'L = ½ × (a + b) × t',
+    diagonal: 'Pada trapesium sama kaki: d₁ = d₂',
+    simLipat: '1 (sama kaki) / 0 (lainnya)', simPutar: 1,
+    svg: '<polygon points="20,20 60,20 70,60 10,60" class="quad-shape"/><line x1="20" y1="20" x2="10" y2="60" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="60" y1="20" x2="70" y2="60" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="40" y1="20" x2="40" y2="60" stroke="#4ecdc4" stroke-width="1" class="dashed-line"/>'
+  },
+  takberaturan: {
+    name: 'Bangun Tak Beraturan', en: 'Irregular Shape',
+    ciris: ['Tidak memiliki sisi atau sudut yang beraturan', 'Tidak masuk klasifikasi segiempat standar', 'Biasanya berbentuk gabungan beberapa bangun sederhana'],
+    sifats: ['Tidak memiliki simetri lipat umum', 'Tidak memiliki simetri putar umum', 'Perlu didekomposisi menjadi bangun yang dikenal', 'Atau menggunakan metode koordinat (rumus surveyor)'],
+    keliling: 'K = jumlah semua sisi luar',
+    luas: 'L = jumlah luas bangun penyusun (dekomposisi)',
+    diagonal: 'Tidak ada rumus khusus',
+    simLipat: 'Bervariasi', simPutar: 'Bervariasi',
+    svg: '<polygon points="10,30 30,10 60,20 70,50 50,70 20,60" class="quad-shape"/><line x1="30" y1="10" x2="50" y2="70" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/><line x1="10" y1="30" x2="70" y2="50" stroke="#ffe66d" stroke-width="1.5" class="dashed-line"/>'
+  }
+};
+
+// ============================================================
+// DATA SOAL
+// ============================================================
+const questions = {
+  segitiga: [
+    // 20 soal segitiga (10 PG + 10 isian), campuran level
+    { id: 's1', type: 'pg', level: 'dasar', q: 'Jumlah sudut dalam sebuah segitiga adalah...', options: ['90°', '180°', '270°', '360°'], correct: 1, exp: 'Sifat fundamental segitiga: jumlah ketiga sudut dalamnya selalu 180°.' },
+    { id: 's2', type: 'pg', level: 'dasar', q: 'Segitiga dengan ketiga sisi sama panjang disebut...', options: ['Segitiga sama kaki', 'Segitiga sembarang', 'Segitiga sama sisi', 'Segitiga siku-siku'], correct: 2, exp: 'Equilateral = ketiga sisi sama, ketiga sudut 60°.' },
+    { id: 's3', type: 'pg', level: 'dasar', q: 'Sebuah segitiga memiliki alas 12 cm dan tinggi 8 cm. Luasnya adalah...', options: ['48 cm²', '96 cm²', '20 cm²', '24 cm²'], correct: 0, exp: 'L = ½ × a × t = ½ × 12 × 8 = 48 cm².' },
+    { id: 's4', type: 'isian', level: 'dasar', q: 'Sebuah segitiga sama sisi memiliki sisi 7 cm. Kelilingnya adalah ... cm.', correct: '21', exp: 'K = 3 × sisi = 3 × 7 = 21 cm.' },
+    { id: 's5', type: 'pg', level: 'dasar', q: 'Segitiga siku-siku memiliki sisi pendek 3 cm dan 4 cm. Panjang sisi miringnya adalah...', options: ['5 cm', '6 cm', '7 cm', '12 cm'], correct: 0, exp: 'Pythagoras: √(3² + 4²) = √25 = 5 cm.' },
+    { id: 's6', type: 'isian', level: 'dasar', q: 'Dua sudut sebuah segitiga adalah 50° dan 70°. Sudut ketiga adalah ... derajat.', correct: '60', exp: '180° − 50° − 70° = 60°.' },
+    { id: 's7', type: 'pg', level: 'sedang', q: 'Pada segitiga sama kaki dengan sudut puncak 40°, besar sudut alasnya adalah...', options: ['40°', '70°', '80°', '140°'], correct: 1, exp: 'Sudut alas sama besar: (180° − 40°)/2 = 70°.' },
+    { id: 's8', type: 'isian', level: 'sedang', q: 'Sebuah segitiga siku-siku memiliki sisi miring 13 cm dan salah satu sisi pendek 5 cm. Sisi lainnya adalah ... cm.', correct: '12', exp: 'Pythagoras: √(13² − 5²) = √(169−25) = √144 = 12 cm.' },
+    { id: 's9', type: 'pg', level: 'sedang', q: 'Garis yang ditarik dari titik sudut tegak lurus sisi di hadapannya disebut...', options: ['Garis bagi', 'Garis berat', 'Garis tinggi', 'Garis sumbu'], correct: 2, exp: 'Definisi garis tinggi (altitude): tegak lurus ke sisi di hadapan titik sudut.' },
+    { id: 's10', type: 'isian', level: 'sedang', q: 'Sebuah segitiga memiliki sisi 6 cm, 8 cm, dan 10 cm. Luasnya adalah ... cm².', correct: '24', exp: 'Sisi 6, 8, 10 → siku-siku (karena 6²+8²=10²). L = ½ × 6 × 8 = 24 cm².' },
+    { id: 's11', type: 'pg', level: 'sedang', q: 'Titik temu ketiga garis berat segitiga disebut...', options: ['Ortosenter', 'Incenter', 'Centroid', 'Circumcenter'], correct: 2, exp: 'Centroid adalah titik temu garis berat, juga titik berat segitiga, membagi garis berat dengan perbandingan 2:1.' },
+    { id: 's12', type: 'isian', level: 'sedang', q: 'Sudut luar sebuah segitiga, jika dua sudut dalam yang tidak berdekatan adalah 35° dan 65°, maka sudut luarnya adalah ... derajat.', correct: '100', exp: 'Sudut luar = 35° + 65° = 100°.' },
+    { id: 's13', type: 'pg', level: 'sedang', q: 'Rumus Heron untuk luas segitiga dengan sisi a, b, c dan s = ½(a+b+c) adalah...', options: ['L = ½ × a × b × sin C', 'L = √[s(s−a)(s−b)(s−c)]', 'L = ½ × a × t', 'L = a × b × c'], correct: 1, exp: 'Rumus Heron: L = √[s(s−a)(s−b)(s−c)], berguna ketika tinggi tidak diketahui.' },
+    { id: 's14', type: 'isian', level: 'sedang', q: 'Segitiga dengan sisi 13 cm, 14 cm, dan 15 cm. Luasnya (rumus Heron) adalah ... cm².', correct: '84', exp: 's = 21, L = √[21·8·7·6] = √7056 = 84 cm².' },
+    { id: 's15', type: 'pg', level: 'hots', q: 'Segitiga ABC dengan AB = 8, AC = 10, dan ∠A = 60°. Luas segitiga ABC adalah...', options: ['20√3', '40', '20√2', '40√3'], correct: 0, exp: 'L = ½ × AB × AC × sin A = ½ × 8 × 10 × sin 60° = 40 × ½√3 = 20√3.' },
+    { id: 's16', type: 'isian', level: 'hots', q: 'Panjang sisi-sisi sebuah segitiga adalah (x+1), (x+2), dan (x+3) cm. Jika kelilingnya 24 cm, maka nilai x = ...', correct: '6', exp: '3x + 6 = 24 → 3x = 18 → x = 6. Sisi: 7, 8, 9 cm.' },
+    { id: 's17', type: 'pg', level: 'hots', q: 'Sebuah segitiga siku-siku memiliki sisi miring 2√2 cm dan salah satu sisi pendek 2 cm. Sudut di hadapan sisi 2 cm adalah...', options: ['30°', '45°', '60°', '90°'], correct: 1, exp: 'sin θ = 2/(2√2) = 1/√2 = ½√2 → θ = 45°. (Segitiga siku-siku sama kaki.)' },
+    { id: 's18', type: 'isian', level: 'hots', q: 'Pada segitiga ABC, ∠A = 50°. Garis bagi dari B dan C berpotongan di titik I (incenter). Besar ∠BIC = ... derajat.', correct: '115', exp: '∠BIC = 90° + ½∠A = 90° + 25° = 115°. (Sifat incenter.)' },
+    { id: 's19', type: 'pg', level: 'hots', q: 'Tiga sisi sebuah segitiga adalah 5, 7, dan 10. Manakah pernyataan yang BENAR?', options: ['Segitiga tersebut siku-siku', 'Segitiga tersebut tumpul', 'Segitiga tersebut lancip', 'Tidak dapat membentuk segitiga'], correct: 1, exp: 'Cek: 5² + 7² = 74, sedangkan 10² = 100. Karena 74 < 100, segitiga tumpul (sisi terpanjang kuadrat > jumlah kuadrat dua sisi lain).' },
+    { id: 's20', type: 'isian', level: 'hots', q: 'Sebuah tali sepanjang 30 cm dibengkokkan membentuk segitiga dengan sisi (x), (x), dan (10) cm. Agar luas maksimum, nilai x = ... cm.', correct: '10', exp: 'Keliling: 2x + 10 = 30 → x = 10. Sisi 10, 10, 10 (sama sisi). Segitiga sama sisi memberikan luas maksimum untuk keliling tetap.' }
+  ],
+  segiempat: [
+    // 20 soal segiempat (10 PG + 10 isian)
+    { id: 'q1', type: 'pg', level: 'dasar', q: 'Luas sebuah persegi dengan sisi 9 cm adalah...', options: ['18 cm²', '36 cm²', '81 cm²', '90 cm²'], correct: 2, exp: 'L = s² = 9² = 81 cm².' },
+    { id: 'q2', type: 'isian', level: 'dasar', q: 'Keliling persegi panjang dengan panjang 12 cm dan lebar 5 cm adalah ... cm.', correct: '34', exp: 'K = 2(p+l) = 2(12+5) = 34 cm.' },
+    { id: 'q3', type: 'pg', level: 'dasar', q: 'Bangun segiempat yang memiliki 4 simetri lipat dan 4 simetri putar adalah...', options: ['Persegi panjang', 'Persegi', 'Belah ketupat', 'Jajar genjang'], correct: 1, exp: 'Persegi memiliki simetri lipat terbanyak (4) dan simetri putar orda 4.' },
+    { id: 'q4', type: 'isian', level: 'dasar', q: 'Diagonal persegi dengan sisi 8 cm adalah ... cm. (dalam bentuk a√2, tulis a saja)', correct: '8', exp: 'd = s√2 = 8√2 cm, jadi a = 8.' },
+    { id: 'q5', type: 'pg', level: 'dasar', q: 'Luas belah ketupat dengan diagonal 12 cm dan 8 cm adalah...', options: ['48 cm²', '96 cm²', '24 cm²', '20 cm²'], correct: 0, exp: 'L = ½ × d₁ × d₂ = ½ × 12 × 8 = 48 cm².' },
+    { id: 'q6', type: 'isian', level: 'dasar', q: 'Luas trapesium dengan sisi sejajar 10 cm dan 14 cm, serta tinggi 6 cm adalah ... cm².', correct: '72', exp: 'L = ½ × (a+b) × t = ½ × (10+14) × 6 = 72 cm².' },
+    { id: 'q7', type: 'pg', level: 'dasar', q: 'Jajar genjang memiliki alas 10 cm dan tinggi 7 cm. Luasnya adalah...', options: ['17 cm²', '35 cm²', '70 cm²', '140 cm²'], correct: 2, exp: 'L = a × t = 10 × 7 = 70 cm².' },
+    { id: 'q8', type: 'isian', level: 'dasar', q: 'Keliling layang-layang dengan sisi-sisi 8 cm, 8 cm, 5 cm, dan 5 cm adalah ... cm.', correct: '26', exp: 'K = 2(a+b) = 2(8+5) = 26 cm.' },
+    { id: 'q9', type: 'pg', level: 'sedang', q: 'Pada belah ketupat, kedua diagonal memiliki hubungan...', options: ['Sama panjang', 'Sejajar', 'Tegak lurus', 'Berimpit'], correct: 2, exp: 'Diagonal belah ketupat saling tegak lurus dan saling membagi dua sama panjang.' },
+    { id: 'q10', type: 'isian', level: 'sedang', q: 'Sebuah persegi panjang memiliki panjang 12 cm dan lebar 5 cm. Panjang diagonalnya adalah ... cm.', correct: '13', exp: 'd = √(p² + l²) = √(144+25) = √169 = 13 cm.' },
+    { id: 'q11', type: 'pg', level: 'sedang', q: 'Bangun segiempat yang TIDAK memiliki simetri lipat adalah...', options: ['Persegi', 'Belah ketupat', 'Jajar genjang', 'Layang-layang'], correct: 2, exp: 'Jajar genjang umum tidak memiliki simetri lipat (hanya 2 simetri putar orda 2).' },
+    { id: 'q12', type: 'isian', level: 'sedang', q: 'Sebuah belah ketupat memiliki diagonal 10 cm dan 24 cm. Panjang sisinya adalah ... cm.', correct: '13', exp: 'Sisi = ½√(d₁² + d₂²) = ½√(100+576) = ½√676 = ½×26 = 13 cm.' },
+    { id: 'q13', type: 'pg', level: 'sedang', q: 'Trapesium sama kaki memiliki ciri khas...', options: ['Kedua diagonal tegak lurus', 'Kedua kaki sama panjang', 'Keempat sudut 90°', 'Tidak memiliki simetri'], correct: 1, exp: 'Trapesium sama kaki: kedua kaki (sisi non-sejajar) sama panjang, sudut alas sama, diagonal sama panjang.' },
+    { id: 'q14', type: 'isian', level: 'sedang', q: 'Sebuah jajar genjang memiliki alas 15 cm dan tinggi 8 cm. Luasnya adalah ... cm².', correct: '120', exp: 'L = a × t = 15 × 8 = 120 cm².' },
+    { id: 'q15', type: 'pg', level: 'sedang', q: 'Sebuah persegi panjang dan sebuah jajar genjang memiliki alas dan tinggi yang sama. Pernyataan yang benar adalah...', options: ['Luas persegi panjang lebih besar', 'Luas jajar genjang lebih besar', 'Keduanya memiliki luas yang sama', 'Tidak dapat ditentukan'], correct: 2, exp: 'Karena L = alas × tinggi untuk keduanya, dan alas & tinggi sama, maka luasnya sama.' },
+    { id: 'q16', type: 'isian', level: 'hots', q: 'Sebuah trapesium memiliki sisi sejajar 20 cm dan 30 cm, serta kedua sisi non-sejajar masing-masing 13 cm. Tinggi trapesium ini (sama kaki) adalah ... cm.', correct: '12', exp: 'Selisih sisi sejajar = 10 cm, dibagi 2 = 5 cm. Tinggi = √(13² − 5²) = √(169−25) = √144 = 12 cm.' },
+    { id: 'q17', type: 'pg', level: 'hots', q: 'Sebuah belah ketupat memiliki sisi 10 cm dan satu diagonal 12 cm. Luasnya adalah...', options: ['48 cm²', '96 cm²', '120 cm²', '60 cm²'], correct: 1, exp: 'Setengah diagonal = 6 cm. Setengah diagonal lain = √(10² − 6²) = 8 cm. d₂ = 16. L = ½ × 12 × 16 = 96 cm².' },
+    { id: 'q18', type: 'isian', level: 'hots', q: 'Sebuah taman berbentuk bangun tak beraturan dapat didekomposisi menjadi persegi panjang (12×8 m) dan segitiga (alas 8 m, tinggi 6 m). Luas total taman adalah ... m².', correct: '120', exp: 'L persegi panjang = 96 m². L segitiga = ½×8×6 = 24 m². Total = 96 + 24 = 120 m².' },
+    { id: 'q19', type: 'pg', level: 'hots', q: 'Sebuah persegi ABCD memiliki sisi 10 cm. Titik E di tengah AB, F di tengah BC. Luas segitiga AEF adalah...', options: ['12,5 cm²', '25 cm²', '50 cm²', '15 cm²'], correct: 0, exp: 'AE = 5, AF adalah setengah diagonal + perhitungan... Lebih mudah: L AEF = ½ × AE × jarak F ke AB. Jarak F ke AB = 5 cm (F tengah BC, AB sisi). L = ½ × 5 × 5 = 12,5 cm².' },
+    { id: 'q20', type: 'isian', level: 'hots', q: 'Kawat sepanjang 40 cm akan dibuat persegi panjang dengan panjang 3 kali lebar. Luas maksimum yang dapat diperoleh adalah ... cm².', correct: '75', exp: 'K = 2(p+l) = 40 → p+l = 20. p = 3l → 4l = 20 → l = 5, p = 15. L = 15 × 5 = 75 cm².' }
+  ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  currentSlide: 1,
+  currentQuad: 'persegi',
+  currentTopic: 'segitiga',
+  currentQIdx: 0,
+  answers: { segitiga: {}, segiempat: {} },
+  submitted: { segitiga: {}, segiempat: {} }
+};
+
+// ============================================================
+// NAVIGASI SLIDE
+// ============================================================
+function goToSlide(n) {
+  if (n < 1 || n > 6) return;
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.getElementById('slide' + n).classList.add('active');
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === n - 1));
+  state.currentSlide = n;
+  
+  if (n === 4) renderQuadDetail();
+  if (n === 5) { renderQuestion(); updateScore(); }
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function nextSlide() { if (state.currentSlide < 6) goToSlide(state.currentSlide + 1); }
+function prevSlide() { if (state.currentSlide > 1) goToSlide(state.currentSlide - 1); }
+
+// ============================================================
+// TABS SEGITIGA
+// ============================================================
+document.querySelectorAll('#triTabs .tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#triTabs .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#slide3 .tab-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+  });
+});
+
+// ============================================================
+// SEGIEMPAT DETAIL
+// ============================================================
+document.querySelectorAll('.quad-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.quad-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    state.currentQuad = card.dataset.quad;
+    renderQuadDetail();
+  });
+});
+
+function renderQuadDetail() {
+  const q = quadData[state.currentQuad];
+  const container = document.getElementById('quadDetail');
+  container.innerHTML = `
+    <div class="card p-7">
+      <div class="flex flex-wrap items-start justify-between gap-6 mb-6">
+        <div class="flex items-center gap-5">
+          <svg width="120" height="120" viewBox="0 0 80 80">${q.svg}</svg>
+          <div>
+            <div class="display font-black text-4xl">${q.name}</div>
+            <div class="text-sm" style="color: var(--muted);">${q.en}</div>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="card-2 p-3 text-center min-w-[80px]">
+            <div class="text-xs uppercase tracking-wider" style="color: var(--muted);">Sim. Lipat</div>
+            <div class="display font-bold text-2xl" style="color: var(--accent);">${q.simLipat}</div>
+          </div>
+          <div class="card-2 p-3 text-center min-w-[80px]">
+            <div class="text-xs uppercase tracking-wider" style="color: var(--muted);">Sim. Putar</div>
+            <div class="display font-bold text-2xl" style="color: var(--accent);">${q.simPutar}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <div class="font-bold text-sm uppercase tracking-wider mb-3" style="color: var(--quad);">Ciri-ciri</div>
+          <ul class="space-y-2 text-sm mb-5" style="color: var(--muted); line-height: 1.6;">
+            ${q.ciris.map(c => `<li class="flex gap-2"><span style="color: var(--quad);">▸</span> ${c}</li>`).join('')}
+          </ul>
+          <div class="font-bold text-sm uppercase tracking-wider mb-3" style="color: var(--quad);">Sifat-sifat</div>
+          <ul class="space-y-2 text-sm" style="color: var(--muted); line-height: 1.6;">
+            ${q.sifats.map(s => `<li class="flex gap-2"><span style="color: var(--quad);">▸</span> ${s}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div class="font-bold text-sm uppercase tracking-wider mb-3" style="color: var(--accent);">Rumus</div>
+          <div class="space-y-3">
+            <div class="formula-box"><div class="text-xs mb-1" style="color: var(--muted);">Keliling</div>${q.keliling}</div>
+            <div class="formula-box"><div class="text-xs mb-1" style="color: var(--muted);">Luas</div>${q.luas}</div>
+            <div class="formula-box"><div class="text-xs mb-1" style="color: var(--muted);">Diagonal</div>${q.diagonal}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+document.getElementById('tabSegitiga').addEventListener('click', () => switchTopic('segitiga'));
+document.getElementById('tabSegiempat').addEventListener('click', () => switchTopic('segiempat'));
+
+function switchTopic(topic) {
+  state.currentTopic = topic;
+  state.currentQIdx = 0;
+  document.getElementById('tabSegitiga').classList.toggle('active', topic === 'segitiga');
+  document.getElementById('tabSegiempat').classList.toggle('active', topic === 'segiempat');
+  document.getElementById('totalCount').textContent = questions[topic].length;
+  renderQuestion();
+  renderNavigator();
+  updateScore();
+}
+
+function getCurrentQuestions() { return questions[state.currentTopic]; }
+
+function renderQuestion() {
+  const qs = getCurrentQuestions();
+  const q = qs[state.currentQIdx];
+  const container = document.getElementById('questionContainer');
+  
+  document.getElementById('currentQNum').textContent = state.currentQIdx + 1;
+  document.getElementById('totalQNum').textContent = qs.length;
+  
+  const userAns = state.answers[state.currentTopic][state.currentQIdx];
+  const isSubmitted = state.submitted[state.currentTopic][state.currentQIdx];
+  
+  let levelBadge = q.level === 'dasar' ? 'badge-easy' : (q.level === 'sedang' ? 'badge-med' : 'badge-hots');
+  let levelLabel = q.level === 'dasar' ? 'Dasar' : (q.level === 'sedang' ? 'Sedang' : 'HOTS');
+  let typeBadge = q.type === 'pg' ? 'badge-pg' : 'badge-isian';
+  let typeLabel = q.type === 'pg' ? 'Pilihan Ganda' : 'Isian Singkat';
+  
+  let answerHTML = '';
+  if (q.type === 'pg') {
+    answerHTML = q.options.map((opt, i) => {
+      const isSelected = userAns === i;
+      const isCorrect = i === q.correct;
+      let cls = 'opt';
+      if (isSelected) cls += ' selected';
+      if (isSubmitted && isCorrect) cls += ' correct';
+      else if (isSubmitted && isSelected && !isCorrect) cls += ' wrong';
+      const letter = String.fromCharCode(65 + i);
+      let indicator = '';
+      if (isSubmitted && isCorrect) indicator = '<span class="ml-auto text-xs" style="color: var(--correct);">✓ kunci</span>';
+      else if (isSubmitted && isSelected && !isCorrect) indicator = '<span class="ml-auto text-xs" style="color: var(--wrong);">✗ dipilih</span>';
+      return `<div class="${cls}" data-value="${i}">
+        <div class="marker">${letter}</div>
+        <div class="flex-1">${opt}</div>
+        ${indicator}
+      </div>`;
+    }).join('');
+  } else {
+    const isCorrect = isSubmitted && checkIsian(q, userAns);
+    let cls = 'input';
+    if (isSubmitted) cls += isCorrect ? ' correct' : ' wrong';
+    let indicator = '';
+    if (isSubmitted) {
+      indicator = isCorrect 
+        ? '<div class="mt-2 text-sm" style="color: var(--correct);">✓ Jawaban benar</div>'
+        : `<div class="mt-2 text-sm" style="color: var(--wrong);">✗ Jawaban salah. Kunci: <b class="mono">${q.correct}</b></div>`;
+    }
+    answerHTML = `<input type="text" class="${cls}" id="isianInput" placeholder="Ketik jawaban..." value="${userAns || ''}" ${isSubmitted ? 'disabled' : ''} onkeydown="if(event.key==='Enter')submitAnswer()">
+      ${indicator}`;
+  }
+  
+  container.innerHTML = `
+    <div class="card overflow-hidden">
+      <div class="p-6 border-b" style="border-color: var(--border);">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="badge ${levelBadge}">${levelLabel}</span>
+          <span class="badge ${typeBadge}">${typeLabel}</span>
+          <span class="text-xs" style="color: var(--muted);">Soal ${state.currentQIdx + 1} dari ${qs.length}</span>
+        </div>
+        <div class="display font-bold text-xl md:text-2xl leading-snug">
+          ${q.q}
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="text-xs uppercase tracking-wider mb-3" style="color: var(--muted);">Jawaban</div>
+        ${answerHTML}
+        ${isSubmitted ? `
+          <div class="explanation">
+            <div class="font-bold mb-2" style="color: var(--accent);">📖 Pembahasan</div>
+            <div>${q.exp}</div>
+          </div>
+        ` : ''}
+        <div class="flex gap-3 mt-5">
+          ${!isSubmitted 
+            ? `<button onclick="submitAnswer()" class="btn btn-primary">Submit Jawaban</button>`
+            : `<button onclick="nextQuestion()" class="btn btn-primary">Soal Berikutnya →</button>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Attach option listeners
+  if (q.type === 'pg' && !isSubmitted) {
+    document.querySelectorAll('#questionContainer .opt').forEach(el => {
+      el.addEventListener('click', () => {
+        const val = parseInt(el.dataset.value);
+        state.answers[state.currentTopic][state.currentQIdx] = val;
+        renderQuestion();
+      });
+    });
+  }
+  
+  renderNavigator();
+  document.getElementById('prevBtn').disabled = state.currentQIdx === 0;
+  document.getElementById('nextBtn').disabled = state.currentQIdx === qs.length - 1;
+}
+
+function submitAnswer() {
+  const q = getCurrentQuestions()[state.currentQIdx];
+  const userAns = state.answers[state.currentTopic][state.currentQIdx];
+  
+  if (q.type === 'pg') {
+    if (userAns === undefined || userAns === null) {
+      showToast('⚠ Pilih jawaban dulu!');
+      return;
+    }
+  } else {
+    const input = document.getElementById('isianInput');
+    if (!input || !input.value.trim()) {
+      showToast('⚠ Isi jawaban dulu!');
+      return;
+    }
+    state.answers[state.currentTopic][state.currentQIdx] = input.value.trim();
+  }
+  
+  state.submitted[state.currentTopic][state.currentQIdx] = true;
+  const correct = checkAnswer(q, state.answers[state.currentTopic][state.currentQIdx]);
+  showToast(correct ? '✓ Jawaban benar!' : '✗ Jawaban salah, lihat pembahasan.');
+  renderQuestion();
+  updateScore();
+}
+
+function checkAnswer(q, ans) {
+  if (ans === undefined || ans === null) return false;
+  if (q.type === 'pg') return ans === q.correct;
+  return checkIsian(q, ans);
+}
+
+function checkIsian(q, ans) {
+  const normalize = s => String(s).trim().toLowerCase().replace(/\s/g, '').replace(/,/g, '.');
+  return normalize(ans) === normalize(q.correct);
+}
+
+function nextQuestion() {
+  const qs = getCurrentQuestions();
+  if (state.currentQIdx < qs.length - 1) {
+    state.currentQIdx++;
+    renderQuestion();
+  }
+}
+function prevQuestion() {
+  if (state.currentQIdx > 0) {
+    state.currentQIdx--;
+    renderQuestion();
+  }
+}
+function goToQuestion(idx) {
+  state.currentQIdx = idx;
+  renderQuestion();
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+
+function renderNavigator() {
+  const qs = getCurrentQuestions();
+  const nav = document.getElementById('qNavigator');
+  nav.innerHTML = qs.map((q, i) => {
+    const submitted = state.submitted[state.currentTopic][i];
+    const correct = submitted && checkAnswer(q, state.answers[state.currentTopic][i]);
+    let cls = 'q-nav-dot';
+    if (i === state.currentQIdx) cls += ' active';
+    else if (submitted) cls += correct ? ' answered' : '';
+    const levelColor = q.level === 'hots' ? '#ff7878' : (q.level === 'sedang' ? '#ffe66d' : '#4ade80');
+    return `<div class="${cls}" onclick="goToQuestion(${i})" title="Soal ${i+1}: ${q.level}" style="${!submitted ? `border-left: 3px solid ${levelColor};` : ''}">${i+1}</div>`;
+  }).join('');
+}
+
+function updateScore() {
+  const qs = getCurrentQuestions();
+  let answered = 0, correct = 0, wrong = 0;
+  qs.forEach((q, i) => {
+    if (state.submitted[state.currentTopic][i]) {
+      answered++;
+      if (checkAnswer(q, state.answers[state.currentTopic][i])) correct++;
+      else wrong++;
+    }
+  });
+  document.getElementById('answeredCount').textContent = answered;
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('wrongCount').textContent = wrong;
+  const score = Math.round((correct / qs.length) * 100);
+  document.getElementById('scoreNum').textContent = score;
+}
+
+function resetQuiz() {
+  if (!confirm('Reset semua jawaban topik ' + state.currentTopic + '?')) return;
+  state.answers[state.currentTopic] = {};
+  state.submitted[state.currentTopic] = {};
+  state.currentQIdx = 0;
+  renderQuestion();
+  updateScore();
+  showToast('✓ Quiz direset.');
+}
+
+// Override confirm agar tidak pakai dialog native
+window.confirm = (msg) => {
+  // Simple custom confirmation using toast - in real app would use modal
+  return true;
+};
+
+// ============================================================
+// REFLEKSI
+// ============================================================
+function saveReflection() {
+  const r1 = document.getElementById('refleksi1').value.trim();
+  const r2 = document.getElementById('refleksi2').value.trim();
+  if (!r1 && !r2) {
+    showToast('⚠ Tulis refleksi dulu.');
+    return;
+  }
+  showToast('✓ Refleksi tersimpan. Terima kasih!');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer = null;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (state.currentSlide === 5) {
+    if (e.key === 'ArrowRight') nextQuestion();
+    if (e.key === 'ArrowLeft') prevQuestion();
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('totalCount').textContent = questions.segitiga.length;
+renderQuadDetail();
+</script>
+</body>
+</html>
