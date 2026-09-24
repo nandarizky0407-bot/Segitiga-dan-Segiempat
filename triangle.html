@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triangle Lab · Year 5 Mathematics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,900;1,9..144,600&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF3E4;--card:#FFFDF6;--ink:#2B211A;--soft:#6F604F;--line:#E4D5BC;--red:#E4572E;--teal:#0F7B6C;--gold:#E29B18;--purple:#7B5EA7;--sh:rgba(43,33,26,.15)}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:'Nunito',sans-serif;color:var(--ink);overflow:hidden;background:var(--paper);
+ background-image:linear-gradient(rgba(120,90,40,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(120,90,40,.05) 1px,transparent 1px),linear-gradient(rgba(120,90,40,.09) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(120,90,40,.09) 1.5px,transparent 1.5px);
+ background-size:28px 28px,28px 28px,140px 140px,140px 140px}
+.disp{font-family:'Fraunces',serif}
+svg.lucide{width:19px;height:19px;stroke-width:2.4;flex:none}
+#topbar{position:fixed;inset:0 0 auto 0;height:60px;z-index:50;display:flex;align-items:center;gap:12px;padding:0 18px;background:rgba(251,243,228,.93);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink)}
+.brand{display:flex;align-items:center;gap:9px;font-family:'Fraunces';font-weight:900;font-size:18px}
+.brand svg{display:block}#topbar .sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border:2px solid var(--ink);border-radius:999px;background:var(--card);font-weight:800;font-size:13.5px}
+.chip.hide{display:none}
+.lang{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--card)}
+.lang button{border:0;background:transparent;font:800 12.5px 'Nunito';padding:6px 13px;cursor:pointer;color:var(--ink)}
+.lang button.on{background:var(--ink);color:var(--paper)}
+#counter{font-weight:900;font-size:13.5px;color:var(--soft);min-width:52px;text-align:right}
+#prog{position:absolute;left:0;bottom:-2px;height:3px;background:var(--red);width:0;transition:width .5s}
+#track{display:flex;height:100dvh;transition:transform .65s cubic-bezier(.7,0,.25,1)}
+.slide{flex:0 0 100vw;height:100%;overflow-y:auto;padding:88px clamp(16px,4vw,56px) 110px}
+.wrap{max-width:1120px;margin:0 auto}
+.kicker{font-weight:900;letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--red);margin-bottom:10px}
+h2.stitle{font-family:'Fraunces';font-weight:900;font-size:clamp(28px,4vw,46px);line-height:1.05}
+.lead{font-size:16.5px;color:var(--soft);font-weight:600;max-width:64ch;margin-top:12px;line-height:1.55}
+.cols{display:grid;gap:clamp(20px,3.4vw,42px);margin-top:26px}
+@media(min-width:921px){.c-2{grid-template-columns:1.05fr .95fr}.c-even{grid-template-columns:1fr 1fr}}
+@media(max-width:920px){.cols{grid-template-columns:1fr}}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--sh);padding:clamp(16px,2.4vw,26px)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:800 14.5px 'Nunito';padding:10px 18px;border-radius:999px;border:2px solid var(--ink);cursor:pointer;background:var(--card);color:var(--ink);box-shadow:4px 4px 0 var(--sh);transition:transform .15s,box-shadow .15s;text-decoration:none}
+.btn:hover{transform:translate(-1px,-2px);box-shadow:5px 6px 0 var(--sh)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--sh)}
+.btn.primary{background:var(--red);color:#FFFDF6}.btn.teal{background:var(--teal);color:#FFFDF6}
+.btn:disabled{opacity:.35;pointer-events:none}
+input[type=text],input[type=number]{font:800 15.5px 'Nunito';padding:10px 13px;border:2px solid var(--ink);border-radius:12px;background:var(--card);color:var(--ink);width:100%}
+input:focus{outline:3px solid var(--gold);outline-offset:2px}
+.ok{color:var(--teal)}.bad{color:var(--red)}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake .45s}
+.rev{opacity:0}.slide.active .rev{animation:rise .6s var(--d,0s) both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.navbtns{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;gap:10px}
+.iconbtn{width:52px;height:52px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;display:grid;place-items:center;box-shadow:4px 4px 0 var(--sh);transition:transform .15s}
+.iconbtn:hover{transform:translateY(-2px)}.iconbtn:disabled{opacity:.3;pointer-events:none}
+#dots{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:49}
+#dots.locked{opacity:.3;pointer-events:none}
+#dots .dot{width:11px;height:11px;border:2px solid var(--ink);border-radius:50%;background:transparent;cursor:pointer;padding:0}
+#dots .dot.on{background:var(--red)}
+.cover-grid{display:grid;gap:clamp(22px,4vw,56px);align-items:center;min-height:calc(100dvh - 220px)}
+@media(min-width:921px){.cover-grid{grid-template-columns:1.05fr .95fr}}
+h1 .t-top{display:block;font-family:'Fraunces';font-style:italic;font-weight:600;font-size:clamp(22px,3vw,36px)}
+h1 .t-big{display:block;font-family:'Fraunces';font-weight:900;font-size:clamp(50px,7vw,92px);color:var(--red);line-height:.95;letter-spacing:-.01em}
+.name-label{display:block;font-weight:900;font-size:16.5px;margin:24px 0 10px}
+.name-row{display:flex;gap:12px;max-width:520px;flex-wrap:wrap}
+.name-row input{flex:1;min-width:190px}
+.err{color:var(--red);font-weight:800;font-size:13.5px;margin-top:9px;min-height:18px}
+#coverArt svg{width:100%;max-width:460px;display:block;margin:0 auto;animation:bob 5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.life-item{display:flex;gap:15px;align-items:flex-start;padding:14px 2px;border-bottom:2px dashed var(--line)}
+.life-item:last-child{border-bottom:0}
+.life-ic{width:44px;height:44px;flex:none;border:2px solid var(--ink);border-radius:12px;display:grid;place-items:center;background:var(--card);box-shadow:3px 3px 0 var(--sh);color:var(--red)}
+.life-item h4{font-size:16px;font-weight:900}.life-item p{font-size:14px;color:var(--soft);font-weight:600;line-height:1.45}
+.q-item{display:flex;gap:13px;align-items:flex-start;padding:12px 0;border-bottom:2px dashed var(--line)}
+.q-item:last-child{border-bottom:0}
+.q-num{font-family:'Fraunces';font-weight:900;font-size:25px;color:var(--red);line-height:1}
+.q-item p{font-weight:800;font-size:15px;line-height:1.45}
+.hintbox{margin-top:16px;border:2px solid var(--ink);border-radius:14px;background:#FCEBD3;padding:13px 15px;font-weight:800;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.hintbox svg{color:var(--gold);margin-top:1px}
+.goal{display:flex;align-items:center;gap:16px;padding:15px 4px;border-bottom:2px dashed var(--line);cursor:pointer;user-select:none}
+.goal:last-child{border-bottom:0}
+.goal .gnum{font-family:'Fraunces';font-weight:900;font-size:26px;color:var(--soft);width:46px;flex:none}
+.goal .gbox{width:27px;height:27px;flex:none;border:2.5px solid var(--ink);border-radius:8px;display:grid;place-items:center;background:var(--card);transition:background .2s}
+.goal .gbox::after{content:'✓';font-weight:900;font-size:16px;color:#FFFDF6;opacity:0;transform:scale(.4);transition:.2s}
+.goal.done .gbox{background:var(--teal)}.goal.done .gbox::after{opacity:1;transform:none}
+.goal p{font-weight:800;font-size:15.5px}
+.goal.done p{text-decoration:line-through;text-decoration-thickness:2.5px;text-decoration-color:var(--teal);color:var(--soft)}
+.bigfact{border:2px solid var(--ink);border-left:10px solid var(--teal);border-radius:14px;background:var(--card);padding:15px 17px;font-weight:900;font-size:16.5px;margin-top:18px;line-height:1.5}
+.linkrow{margin-top:18px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.linkrow small{color:var(--soft);font-weight:700;word-break:break-all}
+.rev-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.rev-row .xeq{font-family:'Fraunces';font-weight:900;font-size:21px}
+.rev-row input{width:104px;text-align:center}
+.fb{font-weight:800;margin-top:10px;min-height:22px;font-size:14.5px}
+#revSvg,#triIntroSvg svg,#typeSvg{width:100%;max-width:440px;display:block;margin:0 auto}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.lchip{display:inline-flex;align-items:center;gap:7px;font:800 13.5px 'Nunito';padding:8px 15px;border:2px solid var(--ink);border-radius:999px;background:var(--card);cursor:pointer;box-shadow:3px 3px 0 var(--sh);transition:.15s}
+.lchip.on{background:var(--ink);color:var(--paper)}
+.counts{display:flex;gap:11px;flex-wrap:wrap;margin-top:18px}
+.cnt{display:flex;align-items:baseline;gap:7px;border:2px solid var(--ink);border-radius:14px;background:var(--card);padding:9px 15px;box-shadow:3px 3px 0 var(--sh);transition:.2s}
+.cnt.hot{background:#FCEBD3;transform:translateY(-2px)}
+.cnt b{font-family:'Fraunces';font-size:28px;font-weight:900;color:var(--red)}
+.cnt span{font-weight:800;font-size:13px}
+#triIntroSvg [data-g="sides"],#triIntroSvg [data-g="verts"],#triIntroSvg [data-g="angles"]{transition:opacity .3s}
+#triIntroSvg[data-focus="sides"] [data-g="verts"],#triIntroSvg[data-focus="sides"] [data-g="angles"],
+#triIntroSvg[data-focus="angles"] [data-g="sides"],#triIntroSvg[data-focus="angles"] [data-g="verts"],
+#triIntroSvg[data-focus="verts"] [data-g="sides"],#triIntroSvg[data-focus="verts"] [data-g="angles"]{opacity:.12}
+#whySvg{width:100%;max-width:860px;display:block;margin:0 auto}
+#whySvg .wedge{transform-box:view-box;transition:transform .95s cubic-bezier(.3,1.15,.4,1)}
+#whySvg .why-line{opacity:0;transition:opacity .5s .5s}
+#whySvg.why-p2 .why-line{opacity:1}
+.why-ctl{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.why-text{max-width:640px;margin:18px auto 0;text-align:center;font-weight:800;font-size:15.5px;line-height:1.6}
+.why-steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.why-steps span{border:2px solid var(--ink);border-radius:999px;background:var(--card);padding:7px 14px;font-weight:800;font-size:13px;box-shadow:3px 3px 0 var(--sh)}
+#eqBar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:16px auto 0;border:2px solid var(--ink);border-radius:14px;background:var(--card);padding:11px 20px;max-width:560px;box-shadow:4px 4px 0 var(--sh)}
+#eqBar .an{font-family:'Fraunces';font-weight:900;font-size:23px}
+#eqBar .op{font-weight:900;font-size:20px;color:var(--soft)}
+#eqBar .res{font-family:'Fraunces';font-weight:900;font-size:25px;color:var(--soft)}
+#eqBar .res.done{color:var(--teal)}
+.tlist{display:flex;flex-direction:column;gap:11px}
+.tbtn{text-align:left;border:2px solid var(--ink);border-radius:14px;background:var(--card);padding:13px 17px;cursor:pointer;font-family:'Nunito';box-shadow:4px 4px 0 var(--sh);transition:.15s}
+.tbtn h4{font-size:16px;font-weight:900}
+.tbtn p{font-size:12.5px;font-weight:700;color:var(--soft);margin-top:2px}
+.tbtn.on{background:var(--ink);color:var(--paper)}.tbtn.on p{color:#D8CBB6}
+#typeSvg{max-width:330px}
+.angsum{font-family:'Fraunces';font-weight:900;font-size:clamp(22px,2.8vw,30px);text-align:center;margin-top:6px}
+.angsum small{display:block;font-family:'Nunito';font-size:12px;font-weight:800;color:var(--soft);letter-spacing:.1em;text-transform:uppercase}
+.tchips{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.tchips div{display:flex;gap:9px;align-items:flex-start;font-weight:800;font-size:14px;line-height:1.4}
+.tchips svg{color:var(--teal);margin-top:1px}
+#matchStage{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,9vw,140px);min-height:440px;margin-top:18px;user-select:none;touch-action:none}
+.mcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px}
+.match-node{border:2px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:5px 5px 0 var(--sh);padding:8px 10px 6px;cursor:grab;transition:transform .15s}
+.match-node.sel{transform:translateY(-3px);border-color:var(--red);box-shadow:5px 7px 0 var(--sh)}
+.match-node svg{width:100%;max-width:170px;display:block;margin:0 auto}
+.match-label{border:2.5px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:5px 5px 0 var(--sh);padding:18px 14px;text-align:center;font-family:'Fraunces';font-weight:900;font-size:clamp(15px,1.9vw,20px);cursor:pointer;touch-action:none}
+.match-label.hit-ok{border-color:var(--teal);background:#E4F2EE}
+.match-label.hit-bad{border-color:var(--red);background:#FBE7DF}
+.match-node.v-ok{border-color:var(--teal)}.match-node.v-bad{border-color:var(--red)}
+#matchOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.mctl{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+#mRound{font-weight:900;font-size:14.5px;color:var(--soft)}
+#mDots{display:flex;gap:7px}
+#mDots i{width:11px;height:11px;border:2px solid var(--ink);border-radius:50%}
+#mDots i.on{background:var(--gold)}#mDots i.ok{background:var(--teal)}#mDots i.bad{background:var(--red)}
+#mMsg{font-weight:900;margin-top:8px;min-height:22px;font-size:15px}
+#matchExp{margin-top:14px}
+#matchExp .exp-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:2px dashed var(--line);font-weight:700;font-size:14px;line-height:1.5}
+#matchExp .exp-row:last-child{border-bottom:0}
+.exp-tri{width:64px;flex:none;background:var(--card)}
+.exblock svg{width:100%;max-width:250px;display:block;margin:6px auto 0}
+.steps{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.5}
+.step .sn{width:25px;height:25px;flex:none;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:900;font-size:12.5px;background:var(--gold);color:var(--ink)}
+.step.hide{display:none}
+.scorebar{display:flex;align-items:center;gap:13px;border:2px solid var(--ink);border-radius:14px;background:var(--card);padding:10px 16px;box-shadow:4px 4px 0 var(--sh);font-weight:900;font-size:14.5px;margin-top:18px}
+.scorebar .fw{flex:1;height:12px;border:2px solid var(--ink);border-radius:99px;overflow:hidden}
+.scorebar .fl{height:100%;background:var(--teal);width:0;transition:width .4s}
+#quizList{display:grid;gap:16px;margin-top:16px}
+@media(min-width:1000px){#quizList{grid-template-columns:1fr 1fr}}
+.qitem{display:flex;gap:13px;background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--sh);padding:13px}
+.qitem.okstate{border-color:var(--teal)}
+.qnum{width:30px;height:30px;flex:none;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:900;font-size:13px}
+.qsvg{flex:none;width:128px}.qsvg svg{width:100%;display:block}
+.qbody{flex:1;min-width:0}
+.qrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qrow .xeq{font-weight:900;font-family:'Fraunces';font-size:17px}
+.qrow input{width:82px;padding:7px 9px;text-align:center}
+.btn.sm{padding:7px 12px;font-size:13px}
+.qsol{margin-top:9px;border-top:2px dashed var(--line);padding-top:9px;display:none}
+.qsol.show{display:block}
+.sol-line{font-weight:700;font-size:13.5px;line-height:1.5;margin-bottom:4px}
+.sumgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:22px}
+.sumcard{border:2px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:5px 5px 0 var(--sh);padding:16px}
+.sumcard b{font-family:'Fraunces';font-size:26px;display:block;color:var(--red)}
+.sumcard span{font-weight:800;font-size:13.5px;color:var(--soft);line-height:1.4;display:block;margin-top:4px}
+.stars{display:flex;gap:8px;margin:12px 0}
+.stars button{background:none;border:0;cursor:pointer;font-size:34px;line-height:1;color:#D8CBB6;transition:transform .15s,color .15s}
+.stars button.on{color:var(--gold);transform:scale(1.15)}
+.thanks{text-align:center;padding:40px 0}
+.thanks .big{font-family:'Fraunces';font-weight:900;font-size:clamp(38px,6vw,74px);color:var(--red);line-height:1.02;margin-top:8px}
+.mini-tri{display:inline-block;animation:bob 3s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand"><svg width="24" height="24" viewBox="0 0 24 24"><polygon points="12,3 22,21 2,21" fill="#E4572E" stroke="#2B211A" stroke-width="2" stroke-linejoin="round"/></svg>Triangle Lab</div>
+  <div class="sp"></div>
+  <span class="chip hide" id="nameChip"></span>
+  <div class="lang"><button id="btnEN" class="on">EN</button><button id="btnID">ID</button></div>
+  <span id="counter">1 / 13</span>
+  <div id="prog"></div>
+</div>
+
+<div id="track">
+
+<!-- 0 · COVER -->
+<section class="slide active">
+ <div class="wrap cover-grid">
+  <div>
+   <div class="kicker rev">Year 5 · Mathematics · Cambridge</div>
+   <h1 class="rev" style="--d:.08s"><span class="t-top" data-en="Let's explore…" data-id="Ayo jelajahi…">Let's explore…</span><span class="t-big">TRIANGLES</span></h1>
+   <p class="lead rev" style="--d:.16s" data-en="Shape detectives: sides, corners, and the magic number 180°." data-id="Detektif bentuk: sisi, sudut, dan angka ajaib 180°.">Shape detectives: sides, corners, and the magic number 180°.</p>
+   <label class="name-label rev" style="--d:.24s" for="nameInput" data-en=" detective, what's your name?" data-id=" detektif, siapa namamu?"> detective, what's your name?</label>
+   <div class="name-row rev" style="--d:.3s">
+     <input type="text" id="nameInput" data-phen="Type your name here…" data-pid="Tulis namamu di sini…" placeholder="Type your name here…" maxlength="24">
+     <button class="btn primary" id="startBtn"><span data-ic="right"></span><span data-en="Start the mission" data-id="Mulai misi">Start the mission</span></button>
+   </div>
+   <div class="err" id="nameErr"></div>
+  </div>
+  <div id="coverArt" class="rev" style="--d:.2s">
+   <svg viewBox="0 0 440 400">
+    <circle cx="230" cy="210" r="150" fill="none" stroke="#2B211A" stroke-width="2" stroke-dasharray="6 8" opacity=".5"/>
+    <polygon points="150,60 60,330 400,300" fill="#E29B18" stroke="#2B211A" stroke-width="2.5" stroke-linejoin="round" transform="translate(16,16)" opacity=".85"/>
+    <polygon points="150,60 60,330 400,300" fill="#0F7B6C" stroke="#2B211A" stroke-width="2.5" stroke-linejoin="round" transform="translate(8,8)" opacity=".9"/>
+    <polygon points="150,60 60,330 400,300" fill="#E4572E" stroke="#2B211A" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M150 100 A46 46 0 0 1 190 112" fill="none" stroke="#2B211A" stroke-width="2.5"/>
+    <path d="M100 305 A52 52 0 0 0 152 330" fill="none" stroke="#2B211A" stroke-width="2.5"/>
+    <path d="M355 305 A50 50 0 0 0 350 262" fill="none" stroke="#2B211A" stroke-width="2.5"/>
+    <circle cx="330" cy="80" r="42" fill="#FFFDF6" stroke="#2B211A" stroke-width="2.5"/>
+    <text x="330" y="90" text-anchor="middle" font-family="Fraunces,serif" font-weight="900" font-size="26" fill="#2B211A">180°</text>
+   </svg>
+  </div>
+ </div>
+</section>
+
+<!-- 1 · REAL LIFE -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Warm-up</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Triangles are everywhere!" data-id="Segitiga ada di mana-mana!">Triangles are everywhere!</h2>
+  <div class="cols c-2">
+   <div class="card rev" style="--d:.1s">
+    <div class="life-item"><div class="life-ic" data-ic="home"></div><div><h4 data-en="Roofs & bridges" data-id="Atap & jembatan">Roofs & bridges</h4><p data-en="Triangles make roofs and bridges super strong — they never wobble!" data-id="Segitiga membuat atap dan jembatan sangat kokoh — tidak mudah goyang!">Triangles make roofs and bridges super strong — they never wobble!</p></div></div>
+    <div class="life-item"><div class="life-ic" data-ic="pizza"></div><div><h4 data-en="Pizza slices" data-id="Potongan pizza">Pizza slices</h4><p data-en="Your pizza slice is a triangle — delicious angles!" data-id="Potongan pizza adalah segitiga — sudut yang lezat!">Your pizza slice is a triangle — delicious angles!</p></div></div>
+    <div class="life-item"><div class="life-ic" data-ic="warning"></div><div><h4 data-en="Road signs" data-id="Rambu lalu lintas">Road signs</h4><p data-en="Warning signs on the road are triangle-shaped." data-id="Rambu peringatan di jalan berbentuk segitiga.">Warning signs on the road are triangle-shaped.</p></div></div>
+    <div class="life-item"><div class="life-ic" data-ic="mountain"></div><div><h4 data-en="Mountains, tents & sails" data-id="Gunung, tenda & layar">Mountains, tents & sails</h4><p data-en="Nature and people love this 3-sided shape." data-id="Alam dan manusia menyukai bentuk 3 sisi ini.">Nature and people love this 3-sided shape.</p></div></div>
+   </div>
+   <div class="card rev" style="--d:.18s">
+    <h4 style="font-family:'Fraunces';font-size:21px;margin-bottom:4px" data-en="Think about it!" data-id="Ayo berpikir!">Think about it!</h4>
+    <div class="q-item"><span class="q-num">1</span><p data-en="Why do engineers and builders love triangles so much?" data-id="Mengapa para insinyur dan tukang bangunan sangat menyukai segitiga?">Why do engineers and builders love triangles so much?</p></div>
+    <div class="q-item"><span class="q-num">2</span><p data-en="Look around you right now — how many triangles can you spot?" data-id="Lihat sekitarmu sekarang — berapa segitiga yang bisa kamu temukan?">Look around you right now — how many triangles can you spot?</p></div>
+    <div class="q-item"><span class="q-num">3</span><p data-en="If a triangle could talk, what secret about its corners might it tell?" data-id="Jika segitiga bisa berbicara, rahasia apa tentang sudut-sudutnya yang akan ia ceritakan?">If a triangle could talk, what secret about its corners might it tell?</p></div>
+    <div class="hintbox"><span data-ic="bulb"></span><span data-en="Keep question 3 in mind — we will discover that secret today!" data-id="Simpan pertanyaan nomor 3 — kita akan menemukan rahasianya hari ini!">Keep question 3 in mind — we will discover that secret today!</span></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 2 · GOALS -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Learning objectives</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Today's mission" data-id="Misi hari ini">Today's mission</h2>
+  <p class="lead rev" style="--d:.1s" data-en="Click each goal when you feel you have mastered it." data-id="Klik setiap tujuan saat kamu merasa sudah menguasainya.">Click each goal when you feel you have mastered it.</p>
+  <div class="card rev" style="--d:.15s;margin-top:22px" id="goalList">
+   <div class="goal"><span class="gnum">01</span><span class="gbox"></span><p data-en="Review angles on a straight line (they add up to 180°)." data-id="Meninjau sudut pada garis lurus (berjumlah 180°).">Review angles on a straight line (they add up to 180°).</p></div>
+   <div class="goal"><span class="gnum">02</span><span class="gbox"></span><p data-en="Name the parts of a triangle and prove why its angles always total 180°." data-id="Menyebutkan bagian-bagian segitiga dan membuktikan mengapa jumlah sudutnya selalu 180°.">Name the parts of a triangle and prove why its angles always total 180°.</p></div>
+   <div class="goal"><span class="gnum">03</span><span class="gbox"></span><p data-en="Classify triangles: right, equilateral, isosceles and scalene." data-id="Mengklasifikasikan segitiga: siku-siku, sama sisi, sama kaki, dan sembarang.">Classify triangles: right, equilateral, isosceles and scalene.</p></div>
+   <div class="goal"><span class="gnum">04</span><span class="gbox"></span><p data-en="Find missing angles in triangles like a true shape detective." data-id="Menentukan sudut yang belum diketahui pada segitiga seperti detektif bentuk sejati.">Find missing angles in triangles like a true shape detective.</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- 3 · REVIEW ANGLES -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Review · Previous lesson</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Angles on a straight line" data-id="Sudut pada garis lurus">Angles on a straight line</h2>
+  <div class="cols c-2">
+   <div class="card rev" style="--d:.1s">
+    <p style="font-weight:700;font-size:14.5px;line-height:1.55" data-en="Remember: angles on a straight line always add up to 180°. Two angles that form a straight line are called supplementary angles (berpelurus)." data-id="Ingat: sudut pada garis lurus selalu berjumlah 180°. Dua sudut yang membentuk garis lurus disebut sudut berpelurus.">Remember: angles on a straight line always add up to 180°. Two angles that form a straight line are called supplementary angles (berpelurus).</p>
+    <div id="revSvg" style="margin-top:14px"></div>
+    <div class="rev-row"><span class="xeq" id="revEq">65° + x = 180°</span>
+      <input type="number" id="revIn" placeholder="?" min="0" max="180">
+      <button class="btn teal sm" id="revCheck"><span data-en="Check" data-id="Periksa">Check</span></button>
+      <button class="btn sm" id="revNew"><span data-ic="refresh"></span><span data-en="New angle" data-id="Sudut baru">New angle</span></button>
+    </div>
+    <div class="fb" id="revFb"></div>
+    <div class="bigfact" data-en="x = 180° − a°  →  subtract the known angle from 180°." data-id="x = 180° − a°  →  kurangi sudut yang diketahui dari 180°.">x = 180° − a°  →  subtract the known angle from 180°.</div>
+   </div>
+   <div class="card rev" style="--d:.18s">
+    <h4 style="font-family:'Fraunces';font-size:20px" data-en="Need a refresher?" data-id="Perlu mengulang?">Need a refresher?</h4>
+    <p style="font-weight:700;font-size:14.5px;color:var(--soft);margin-top:8px;line-height:1.55" data-en="Revisit our previous lesson about angles before we continue. It only takes a few minutes!" data-id="Pelajari kembali materi sudut sebelumnya sebelum kita lanjut. Hanya butuh beberapa menit!">Revisit our previous lesson about angles before we continue. It only takes a few minutes!</p>
+    <div class="linkrow">
+      <a class="btn teal" href="https://nandarizky0407-bot.github.io/Mengenal-Sudut/angles.html" target="_blank" rel="noopener"><span data-ic="link"></span><span data-en="Open the angles lesson" data-id="Buka materi sudut">Open the angles lesson</span></a>
+      <small>nandarizky0407-bot.github.io/Mengenal-Sudut/angles.html</small>
+    </div>
+    <div class="hintbox" style="margin-top:22px"><span data-ic="bulb"></span><span data-en="Try the mini challenge on the left at least twice before moving on!" data-id="Coba tantangan mini di sebelah kiri minimal dua kali sebelum lanjut!">Try the mini challenge on the left at least twice before moving on!</span></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 4 · MEET THE TRIANGLE -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">New material</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Meet the triangle" data-id="Kenalan dengan segitiga">Meet the triangle</h2>
+  <div class="cols c-2">
+   <div class="card rev" style="--d:.1s">
+    <div id="triIntroSvg" data-focus="">
+      <svg viewBox="0 0 360 300">
+        <polygon points="40,250 320,250 150,50" fill="#FFF6E8" stroke="#2B211A" stroke-width="3" stroke-linejoin="round"/>
+        <g data-g="sides">
+          <line x1="40" y1="250" x2="320" y2="250" stroke="#E4572E" stroke-width="6" stroke-linecap="round"/>
+          <line x1="320" y1="250" x2="150" y2="50" stroke="#0F7B6C" stroke-width="6" stroke-linecap="round"/>
+          <line x1="150" y1="50" x2="40" y2="250" stroke="#E29B18" stroke-width="6" stroke-linecap="round"/>
+          <text x="180" y="278" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-weight="900" font-size="20" fill="#E4572E">side a</text>
+          <text x="258" y="140" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-weight="900" font-size="18" fill="#0F7B6C" transform="rotate(45 258 140)">side b</text>
+          <text x="80" y="140" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-weight="900" font-size="18" fill="#E29B18" transform="rotate(-52 80 140)">side c</text>
+        </g>
+        <g data-g="angles">
+          <path d="M95 250 A55 55 0 0 0 88 219" fill="none" stroke="#E4572E" stroke-width="3"/>
+          <text x="112" y="234" font-family="Nunito" font-weight="900" font-size="16" fill="#E4572E">x</text>
+          <path d="M268 250 A55 55 0 0 1 287 216" fill="none" stroke="#0F7B6C" stroke-width="3"/>
+          <text x="252" y="234" font-family="Nunito" font-weight="900" font-size="16" fill="#0F7B6C">y</text>
+          <path d="M168 88 A45 45 0 0 1 182 87" fill="none" stroke="#E29B18" stroke-width="3"/>
+          <text x="153" y="108" font-family="Nunito" font-weight="900" font-size="16" fill="#E29B18">z</text>
+        </g>
+        <g data-g="verts">
+          <circle cx="40" cy="250" r="8" fill="#2B211A"/><circle cx="320" cy="250" r="8" fill="#2B211A"/><circle cx="150" cy="50" r="8" fill="#2B211A"/>
+          <text x="26" y="278" font-family="Fraunces,serif" font-weight="900" font-size="20" fill="#2B211A">A</text>
+          <text x="330" y="278" font-family="Fraunces,serif" font-weight="900" font-size="20" fill="#2B211A">B</text>
+          <text x="150" y="36" text-anchor="middle" font-family="Fraunces,serif" font-weight="900" font-size="20" fill="#2B211A">C</text>
+        </g>
+      </svg>
+    </div>
+    <div class="legend">
+      <button class="lchip" data-f="sides" data-en="3 Sides" data-id="3 Sisi">3 Sides</button>
+      <button class="lchip" data-f="verts" data-en="3 Vertices (corners)" data-id="3 Titik sudut">3 Vertices (corners)</button>
+      <button class="lchip" data-f="angles" data-en="3 Angles inside" data-id="3 Sudut di dalam">3 Angles inside</button>
+    </div>
+   </div>
+   <div class="card rev" style="--d:.18s">
+    <p style="font-weight:700;font-size:15px;line-height:1.6" data-en="A triangle is a closed 2D shape with 3 straight sides. Click the buttons to highlight each part!" data-id="Segitiga adalah bangun datar tertutup dengan 3 sisi lurus. Klik tombol untuk menyorot setiap bagiannya!">A triangle is a closed 2D shape with 3 straight sides. Click the buttons to highlight each part!</p>
+    <div class="counts">
+      <div class="cnt" data-c="sides"><b>3</b><span data-en="sides" data-id="sisi">sides</span></div>
+      <div class="cnt" data-c="verts"><b>3</b><span data-en="vertices" data-id="titik sudut">vertices</span></div>
+      <div class="cnt" data-c="angles"><b>3</b><span data-en="angles" data-id="sudut">angles</span></div>
+    </div>
+    <div class="bigfact" data-en="Secret preview: the 3 angles inside ALWAYS add up to 180° — we will prove it on the next slide!" data-id="Pratinjau rahasia: 3 sudut di dalamnya SELALU berjumlah 180° — kita akan membuktikannya di slide berikutnya!">Secret preview: the 3 angles inside ALWAYS add up to 180° — we will prove it on the next slide!</div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 5 · WHY 180 -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Proof lab</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Why do the angles always make 180°?" data-id="Mengapa jumlah sudutnya selalu 180°?">Why do the angles always make 180°?</h2>
+  <div class="card rev" style="--d:.1s;margin-top:22px">
+    <div class="why-steps">
+      <span data-en="1 · Draw any triangle" data-id="1 · Gambar segitiga apa pun">1 · Draw any triangle</span>
+      <span data-en="2 · Tear off its 3 corners" data-id="2 · Sobek 3 sudutnya">2 · Tear off its 3 corners</span>
+      <span data-en="3 · Line them up — they fit a straight line!" data-id="3 · Bariskan — pas di garis lurus!">3 · Line them up — they fit a straight line!</span>
+    </div>
+    <div id="whySvg"></div>
+    <div class="why-ctl">
+      <button class="btn primary" id="tearBtn"><span data-ic="scissors"></span><span data-en="Tear the corners!" data-id="Sobek sudutnya!">Tear the corners!</span></button>
+      <button class="btn" id="newTriBtn"><span data-ic="refresh"></span><span data-en="Try another triangle" data-id="Coba segitiga lain">Try another triangle</span></button>
+    </div>
+    <div id="eqBar"><span class="an" id="eq0">?°</span><span class="op">+</span><span class="an" id="eq1">?°</span><span class="op">+</span><span class="an" id="eq2">?°</span><span class="op">=</span><span class="res" id="eqRes">?°</span></div>
+    <p class="why-text" data-en="A straight line measures 180°. The three torn corners sit side by side and fill the line perfectly — no gaps, no overlaps. That is why every triangle's angles total 180°!" data-id="Garis lurus berukuran 180°. Ketiga sudut yang disobek duduk berdampingan dan memenuhi garis dengan sempurna — tanpa celah, tanpa tumpang tindih. Itulah mengapa jumlah sudut setiap segitiga selalu 180°!">A straight line measures 180°. The three torn corners sit side by side and fill the line perfectly — no gaps, no overlaps. That is why every triangle's angles total 180°!</p>
+    <p class="why-text" style="font-weight:700;color:var(--soft);font-size:13.5px" data-en="Press “Try another triangle” — big, small, skinny or wide… the result is always 180°." data-id="Tekan “Coba segitiga lain” — besar, kecil, ramping atau lebar… hasilnya selalu 180°.">Press “Try another triangle” — big, small, skinny or wide… the result is always 180°.</p>
+  </div>
+ </div>
+</section>
+
+<!-- 6 · TYPES -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Classification</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Four types of triangles" data-id="Empat jenis segitiga">Four types of triangles</h2>
+  <div class="cols c-2">
+   <div class="tlist rev" style="--d:.1s" id="tList"></div>
+   <div class="card rev" style="--d:.16s" id="typePanel">
+     <div id="typeSvg"></div>
+     <div class="angsum" id="typeSum"></div>
+     <div class="tchips" id="typeFacts"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 7 · MATCHING GAME -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Game time · 5 rounds</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Triangle sorting challenge" data-id="Tantangan mengurutkan segitiga">Triangle sorting challenge</h2>
+  <p class="lead rev" style="--d:.08s" data-en="Drag a line from each triangle to its correct name — or click a triangle, then click the name. When all four are connected, press Check answers!" data-id="Tarik garis dari setiap segitiga ke namanya yang benar — atau klik segitiga, lalu klik namanya. Setelah keempatnya terhubung, tekan Periksa jawaban!">Drag a line from each triangle to its correct name — or click a triangle, then click the name. When all four are connected, press Check answers!</p>
+  <div class="card rev" style="--d:.12s;margin-top:20px">
+    <div id="matchStage">
+      <svg id="matchOverlay"><g id="mLines"></g><line id="tempLine" stroke="#2B211A" stroke-width="3" stroke-dasharray="7 7" opacity="0"/></svg>
+      <div class="mcol" id="triCol"></div>
+      <div class="mcol" id="labCol"></div>
+    </div>
+    <div class="mctl">
+      <span id="mRound"></span>
+      <span id="mDots"></span>
+      <span class="sp" style="flex:1"></span>
+      <button class="btn teal" id="mCheck"><span data-ic="check"></span><span data-en="Check answers" data-id="Periksa jawaban">Check answers</span></button>
+      <button class="btn primary hide" id="mNext"><span data-en="Next round" data-id="Ronde berikutnya">Next round</span><span data-ic="right"></span></button>
+    </div>
+    <div id="mMsg"></div>
+    <div id="matchExp" class="hide"></div>
+  </div>
+ </div>
+</section>
+
+<!-- 8 · EXAMPLES -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Watch & learn</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Worked examples" data-id="Contoh soal">Worked examples</h2>
+  <div class="cols c-even">
+   <div class="card exblock rev" style="--d:.1s">
+     <b style="font-family:'Fraunces'" data-en="Example 1" data-id="Contoh 1">Example 1</b>
+     <p style="font-weight:700;font-size:14.5px;margin-top:6px;line-height:1.5" data-en="Two angles of a triangle are 65° and 48°. Find the third angle (x)." data-id="Dua sudut sebuah segitiga adalah 65° dan 48°. Tentukan sudut ketiganya (x).">Two angles of a triangle are 65° and 48°. Find the third angle (x).</p>
+     <div id="ex1Svg"></div>
+     <button class="btn sm" data-ex="1"><span data-ic="bulb"></span><span data-en="Show me the steps" data-id="Tampilkan langkahnya">Show me the steps</span></button>
+     <div class="steps hide" id="steps1"></div>
+   </div>
+   <div class="card exblock rev" style="--d:.18s">
+     <b style="font-family:'Fraunces'" data-en="Example 2" data-id="Contoh 2">Example 2</b>
+     <p style="font-weight:700;font-size:14.5px;margin-top:6px;line-height:1.5" data-en="An isosceles triangle has a vertex angle of 40°. Find each base angle (x)." data-id="Segitiga sama kaki memiliki sudut puncak 40°. Tentukan besar setiap sudut alasnya (x).">An isosceles triangle has a vertex angle of 40°. Find each base angle (x).</p>
+     <div id="ex2Svg"></div>
+     <button class="btn sm" data-ex="2"><span data-ic="bulb"></span><span data-en="Show me the steps" data-id="Tampilkan langkahnya">Show me the steps</span></button>
+     <div class="steps hide" id="steps2"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 9 · PRACTICE 20 -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Practice · 20 questions</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Your turn: find the missing angle" data-id="Giliranmu: tentukan sudut yang belum diketahui">Your turn: find the missing angle</h2>
+  <div class="scorebar rev" style="--d:.08s"><span data-en="Correct (first try):" data-id="Benar (percobaan pertama):">Correct (first try):</span><div class="fw"><div class="fl" id="qFill"></div></div><span id="qScore">0 / 20</span></div>
+  <div id="quizList"></div>
+ </div>
+</section>
+
+<!-- 10 · ENRICHMENT -->
+<section class="slide">
+ <div class="wrap" style="max-width:760px;text-align:center">
+  <div class="kicker rev">Enrichment · Pengayaan</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Level up, Triangle Master!" data-id="Naik level, Master Segitiga!">Level up, Triangle Master!</h2>
+  <div class="card rev" style="--d:.12s;margin-top:24px">
+    <div style="color:var(--gold);display:flex;justify-content:center" data-ic="trophy"></div>
+    <p style="font-weight:800;font-size:16.5px;margin-top:12px;line-height:1.6" data-en="Finished all 20 challenges? Amazing! Ready for a bigger adventure with missing angles? Try this interactive practice from IXL:" data-id="Sudah menyelesaikan 20 soal? Luar biasa! Siap untuk petualangan lebih besar dengan sudut yang belum diketahui? Coba latihan interaktif dari IXL ini:">Finished all 20 challenges? Amazing! Ready for a bigger adventure with missing angles? Try this interactive practice from IXL:</p>
+    <div style="margin-top:18px"><a class="btn primary" style="font-size:16px;padding:13px 24px" href="https://uk.ixl.com/maths/year-6/find-missing-angles-in-triangles" target="_blank" rel="noopener"><span data-ic="link"></span><span data-en="Go to IXL: Find missing angles in triangles" data-id="Buka IXL: Menentukan sudut yang belum diketahui pada segitiga">Go to IXL: Find missing angles in triangles</span></a></div>
+    <small style="display:block;margin-top:12px;color:var(--soft);font-weight:700;word-break:break-all">uk.ixl.com/maths/year-6/find-missing-angles-in-triangles</small>
+  </div>
+ </div>
+</section>
+
+<!-- 11 · CONCLUSION + REFLECTION -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Wrap-up</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="What did we learn today?" data-id="Apa yang kita pelajari hari ini?">What did we learn today?</h2>
+  <div class="sumgrid">
+    <div class="sumcard rev" style="--d:.08s"><b>3 · 3 · 3</b><span data-en="Every triangle has 3 sides, 3 vertices and 3 angles." data-id="Setiap segitiga memiliki 3 sisi, 3 titik sudut, dan 3 sudut.">Every triangle has 3 sides, 3 vertices and 3 angles.</span></div>
+    <div class="sumcard rev" style="--d:.12s"><b>a+b+c = 180°</b><span data-en="The angles inside any triangle always total 180° — proven with torn corners!" data-id="Jumlah sudut dalam segitiga selalu 180° — terbukti dengan sudut yang disobek!">The angles inside any triangle always total 180° — proven with torn corners!</span></div>
+    <div class="sumcard rev" style="--d:.16s"><b>4 types</b><span data-en="Right, equilateral, isosceles and scalene — sorted by sides and angles." data-id="Siku-siku, sama sisi, sama kaki, dan sembarang — dibedakan oleh sisi dan sudutnya.">Right, equilateral, isosceles and scalene — sorted by sides and angles.</span></div>
+    <div class="sumcard rev" style="--d:.2s"><b>x = 180° − …</b><span data-en="Missing angle = 180° minus the angles you already know." data-id="Sudut yang belum diketahui = 180° dikurangi sudut-sudut yang sudah diketahui.">Missing angle = 180° minus the angles you already know.</span></div>
+  </div>
+  <div class="card rev" style="--d:.26s;margin-top:24px">
+    <h4 style="font-family:'Fraunces';font-size:20px" data-en="Reflection — how do you feel about triangles now?" data-id="Refleksi — bagaimana perasaanmu tentang segitiga sekarang?">Reflection — how do you feel about triangles now?</h4>
+    <div class="stars" id="stars"></div>
+    <p style="font-weight:800;font-size:14.5px;margin-top:8px" data-en="One thing I will remember from today…" data-id="Satu hal yang akan saya ingat dari hari ini…">One thing I will remember from today…</p>
+    <input type="text" style="margin-top:8px" data-phen="Write your reflection here…" data-pid="Tulis refleksimu di sini…" placeholder="Write your reflection here…">
+  </div>
+ </div>
+</section>
+
+<!-- 12 · THANK YOU -->
+<section class="slide">
+ <div class="wrap thanks">
+   <div class="mini-tri"><svg width="64" height="58" viewBox="0 0 64 58"><polygon points="32,4 60,54 4,54" fill="#E4572E" stroke="#2B211A" stroke-width="3" stroke-linejoin="round"/></svg></div>
+   <h2 class="stitle rev" style="--d:.05s" data-en="Mission complete!" data-id="Misi selesai!">Mission complete!</h2>
+   <div class="big rev" style="--d:.12s"><span data-en="Thank you for today," data-id="Terima kasih untuk hari ini,">Thank you for today,</span><br><span id="thanksName" style="color:var(--teal)">Detective!</span></div>
+   <p class="lead rev" style="--d:.2s;margin:18px auto 0;text-align:center" data-en="You are officially a Triangle Master. Keep spotting shapes all around you!" data-id="Kamu resmi menjadi Master Segitiga. Terus temukan bentuk-bentuk di sekitarmu!">You are officially a Triangle Master. Keep spotting shapes all around you!</p>
+   <div class="rev" style="--d:.28s;margin-top:26px"><button class="btn" id="restartBtn"><span data-ic="refresh"></span><span data-en="Back to the start" data-id="Kembali ke awal">Back to the start</span></button></div>
+ </div>
+</section>
+
+</div><!-- /track -->
+
+<div id="dots" class="locked"></div>
+<div class="navbtns">
+  <button class="iconbtn" id="prevBtn" disabled><span data-ic="left"></span></button>
+  <button class="iconbtn" id="nextBtn" disabled><span data-ic="right"></span></button>
+</div>
+
+<script>
+/* ---------- icons ---------- */
+const IC={right:'M9 6l6 6-6 6',left:'M15 6l-6 6 6 6',check:'M4 12l5 5L20 7',x:'M6 6l12 12M18 6L6 18',bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-4 10c.6.6 1 1.3 1 2h6c0-.7.4-1.4 1-2a6 6 0 00-4-10z',home:'M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z',pizza:'M12 2L21 20a1 1 0 01-1 1H4a1 1 0 01-1-1L12 2zM9 13h.01M13 16h.01M12 8h.01',warning:'M12 3L2 20h20L12 3zM12 10v4M12 17h.01',mountain:'M3 20l6-11 4 7 3-5 5 9H3z',link:'M10 14a5 5 0 007 0l3-3a5 5 0 00-7-7l-2 2M14 10a5 5 0 00-7 0l-3 3a5 5 0 007 7l2-2',refresh:'M21 12a9 9 0 11-3-6.7M21 3v6h-6',scissors:'M6 4l12 12M6 20L18 8M6 6m-2 0a2 2 0 104 0 2 2 0 10-4 0M6 18m-2 0a2 2 0 104 0 2 2 0 10-4 0',trophy:'M8 21h8M12 17v4M6 3h12v5a6 6 0 01-12 0V3zM6 5H3a3 3 0 003 4M18 5h3a3 3 0 01-3 4'};
+document.querySelectorAll('[data-ic]').forEach(el=>{el.innerHTML=`<svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[el.dataset.ic]}"/></svg>`});
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let lang='en', name='', started=false, slide=0; const N=13;
+const setBI=(el,en,id)=>{el.dataset.en=en;el.dataset.id=id;el.textContent=lang==='en'?en:id};
+function setLang(l){lang=l;$('#btnEN').classList.toggle('on',l==='en');$('#btnID').classList.toggle('on',l==='id');
+ $$('[data-en]').forEach(el=>el.textContent=l==='en'?el.dataset.en:el.dataset.id);
+ $$('[data-phen]').forEach(el=>el.placeholder=l==='en'?el.dataset.phen:el.dataset.pid);
+ document.documentElement.lang=l==='en'?'en':'id'}
+ $('#btnEN').onclick=()=>setLang('en'); $('#btnID').onclick=()=>setLang('id');
+
+/* ---------- navigation ---------- */
+const track=$('#track');
+const dots=$('#dots'); for(let i=0;i<N;i++){const d=document.createElement('button');d.className='dot';d.title=(i+1)+'';d.onclick=()=>goto(i);dots.appendChild(d)}
+function goto(i){slide=Math.max(0,Math.min(N-1,i));track.style.transform=`translateX(-${slide*100}vw)`;
+ $$('#dots .dot').forEach((d,k)=>d.classList.toggle('on',k===slide));
+ $('#counter').textContent=(slide+1)+' / '+N; $('#prog').style.width=(slide/(N-1)*100)+'%';
+ $('#prevBtn').disabled=slide===0||!started; $('#nextBtn').disabled=slide===N-1||!started;
+ $$('.slide').forEach((s,k)=>s.classList.toggle('active',k===slide));}
+ $('#prevBtn').onclick=()=>goto(slide-1); $('#nextBtn').onclick=()=>goto(slide+1);
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key==='ArrowRight')goto(slide+1);if(e.key==='ArrowLeft')goto(slide-1)});
+ $('#startBtn').onclick=()=>{const v=$('#nameInput').value.trim();
+ if(v.length<2){setBI($('#nameErr'),'Please write your name first! (min. 2 letters)','Tulis namamu dulu ya! (min. 2 huruf)');$('#nameInput').classList.add('shake');setTimeout(()=>$('#nameInput').classList.remove('shake'),500);return}
+ name=v;started=true;$('#nameErr').textContent='';$('#nameChip').classList.remove('hide');$('#nameChip').textContent='★ '+name;
+ $('#dots').classList.remove('locked');goto(1);
+ setBI($('#thanksName'),name+'!',name+'!');};
+ $('#nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#startBtn').click()});
+ $('#restartBtn').onclick=()=>goto(0);
+
+/* goals */
+ $$('.goal').forEach(g=>g.onclick=()=>g.classList.toggle('done'));
+
+/* ---------- review: straight line ---------- */
+let revA=65;
+function drawRev(){const cx=200,cy=110,x=180-revA,rad=d=>d*Math.PI/180;
+ const ob=[Math.cos(rad(x)),-Math.sin(rad(x))], p2=[cx+36*ob[0],cy+36*ob[1]];
+ const bisA=[(-1+ob[0]),(0+ob[1])],mA=Math.hypot(...bisA),bA=[bisA[0]/mA,bisA[1]/mA];
+ const bisX=[(1+ob[0]),ob[1]],mX=Math.hypot(...bisX),bX=[bisX[0]/mX,bisX[1]/mX];
+ $('#revSvg').innerHTML=`<svg viewBox="0 0 400 170">
+  <line x1="25" y1="110" x2="375" y2="110" stroke="#2B211A" stroke-width="3.5"/>
+  <line x1="${cx}" y1="${cy}" x2="${cx+95*ob[0]}" y2="${cy+95*ob[1]}" stroke="#E4572E" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="${cx}" cy="${cy}" r="5" fill="#2B211A"/>
+  <path d="M${cx-36} ${cy} A36 36 0 0 0 ${p2[0]} ${p2[1]}" fill="none" stroke="#0F7B6C" stroke-width="3"/>
+  <path d="M${cx+27} ${cy} A27 27 0 0 1 ${cx+27*ob[0]} ${cy+27*ob[1]}" fill="none" stroke="#E29B18" stroke-width="3" stroke-dasharray="4 4"/>
+  <text x="${cx+54*bA[0]}" y="${cy+54*bA[1]+5}" text-anchor="middle" font-family="Fraunces,serif" font-weight="900" font-size="19" fill="#0F7B6C">${revA}°</text>
+  <text x="${cx+46*bX[0]}" y="${cy+46*bX[1]+5}" text-anchor="middle" font-family="Fraunces,serif" font-weight="900" font-size="19" fill="#E29B18">x</text>
+  <text x="30" y="150" font-family="Nunito" font-weight="800" font-size="12.5" fill="#6F604F">a + x = 180° (straight line)</text></svg>`;
+ $('#revEq').textContent=revA+'° + x = 180°'; $('#revIn').value=''; setBI($('#revFb'),'','','')||($('#revFb').textContent='');}
+function newRev(){revA=35+Math.floor(Math.random()*111);drawRev()}
+ $('#revNew').onclick=newRev;
+ $('#revCheck').onclick=()=>{const v=parseInt($('#revIn').value),fb=$('#revFb');
+ if(v===180-revA){fb.className='fb ok';setBI(fb,`Correct! ${revA}° + ${180-revA}° = 180°. Supplementary angles!`,`Benar! ${revA}° + ${180-revA}° = 180°. Sudut berpelurus!`)}
+ else{fb.className='fb bad';setBI(fb,'Not yet — remember: a + x = 180°, so x = 180° − a.','Belum tepat — ingat: a + x = 180°, jadi x = 180° − a.');fb.classList.add('shake');setTimeout(()=>fb.classList.remove('shake'),500)}};
+newRev();
+
+/* ---------- intro triangle focus ---------- */
+ $$('.lchip').forEach(ch=>ch.onclick=()=>{const f=ch.dataset.f,box=$('#triIntroSvg'),on=box.dataset.focus===f;
+ box.dataset.focus=on?'':f; $$('.lchip').forEach(c=>c.classList.toggle('on',!on&&c.dataset.f===f));
+ $$('.cnt').forEach(c=>c.classList.toggle('hot',!on&&c.dataset.c===f))});
+
+/* ---------- why 180 ---------- */
+const WC=['#E4572E','#0F7B6C','#E29B18'];let whyV=[];
+function buildWhy(){const r1=()=>40+Math.floor(Math.random()*61);let a1=r1(),a2,a3;
+ do{a2=25+Math.floor(Math.random()*(156-a1-25))}while(180-a1-a2<20);a3=180-a1-a2;
+ const angs=[a1,a2,a3],W=340,A=[0,0],B=[W,0],t=W*Math.sin(a2*Math.PI/180)/Math.sin((a1+a2)*Math.PI/180);
+ let P=[[0,0],[W,0],[t*Math.cos(a1*Math.PI/180),-t*Math.sin(a1*Math.PI/180)]];
+ const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);
+ const s=Math.min(600/w,235/h),tx=430-w*s/2-Math.min(...xs)*s,ty=280-Math.max(...ys)*s;
+ whyV=P.map(p=>[p[0]*s+tx,p[1]*s+ty]);
+ let svg='<svg viewBox="0 0 880 470" id="whySvgIn">';
+ svg+='<g class="why-line"><line x1="130" y1="402" x2="750" y2="402" stroke="#2B211A" stroke-width="4" stroke-dasharray="10 8"/><text x="440" y="442" text-anchor="middle" font-family="Fraunces,serif" font-weight="900" font-size="22" fill="#6F604F">straight line = 180°</text></g>';
+ for(let i=0;i<3;i++){const V=whyV[i],P1=whyV[(i+1)%3],P2=whyV[(i+2)%3];
+  const d1=[P1[0]-V[0],P1[1]-V[1]],m1=Math.hypot(...d1),u1=[d1[0]/m1,d1[1]/m1];
+  const d2=[P2[0]-V[0],P2[1]-V[1]],m2=Math.hypot(...d2),u2=[d2[0]/m2,d2[1]/m2];
+  const r=40,z=u1[0]*u2[1]-u1[1]*u2[0],sw=z>0?1:0;
+  const bis=[u1[0]+u2[0],u1[1]+u2[1]],mb=Math.hypot(...bis),bb=[bis[0]/mb,bis[1]/mb];
+  const pth=`M${V[0]} ${V[1]} L${V[0]+u1[0]*r} ${V[1]+u1[1]*r} A${r} ${r} 0 0 ${sw} ${V[0]+u2[0]*r} ${V[1]+u2[1]*r} Z`;
+  svg+=`<g class="wedge" id="w${i}" style="transform-origin:${V[0]}px ${V[1]}px"><path d="${pth}" fill="${WC[i]}" fill-opacity=".92" stroke="#2B211A" stroke-width="2.5"/><text x="${V[0]+bb[0]*32}" y="${V[1]+bb[1]*32+5}" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="16" fill="#2B211A">${angs[i]}°</text></g>`;}
+ svg+=`<polygon points="${whyV.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#2B211A" stroke-width="3.5" stroke-linejoin="round" opacity=".9"/></svg>`;
+ const box=$('#whySvg');box.innerHTML=svg;box.firstElementChild.id='whySvg';
+ ['eq0','eq1','eq2'].forEach((id,i)=>$('#'+id).textContent=angs[i]+'°');
+ const res=$('#eqRes');res.textContent='= ?°';res.classList.remove('done');
+ $('#tearBtn').dataset.angs=angs.join(',');}
+function tearWhy(){const svg=$('#whySvg');if(svg.classList.contains('why-p2'))return;svg.classList.add('why-p2');
+ const angs=$('#tearBtn').dataset.angs.split(',').map(Number),s=620/180,X0=130,Y=402;let acc=0;
+ angs.forEach((a,i)=>{const V=whyV[i],bis=[whyV[(i+1)%3][0]-V[0]+whyV[(i+2)%3][0]-V[0],whyV[(i+1)%3][1]-V[1]+whyV[(i+2)%3][1]-V[1]];
+  const beta=Math.atan2(bis[1],bis[0])*180/Math.PI,ro=-90-beta;
+  const g=$('#w'+i);g.style.transitionDelay=(i*0.22)+'s';
+  g.style.transform=`translate(${X0+(acc+a/2)*s-V[0]}px, ${Y-V[1]}px) rotate(${ro}deg)`;acc+=a;});
+ const res=$('#eqRes');setTimeout(()=>{res.textContent='180° ✓';res.classList.add('done')},1400)}
+ $('#tearBtn').onclick=tearWhy; $('#newTriBtn').onclick=buildWhy; buildWhy();
+
+/* ---------- triangle drawing helper ---------- */
+function PT(sh){return{eq:[[20,112],[140,112],[80,8]],iso:[[20,112],[140,112],[80,18]],right:[[25,15],[25,112],[140,112]],sca:[[55,12],[12,112],[148,95]],gen:[[45,15],[12,112],[148,85]]}[sh]}
+function drawTri(sh,o={}){const P=PT(sh);let s=`<svg viewBox="0 0 160 130"><polygon points="${P.map(p=>p.join(',')).join(' ')}" fill="#FFF6E8" stroke="#2B211A" stroke-width="2.5" stroke-linejoin="round"/>`;
+ if(o.right!=null){const V=P[o.right],o1=P[(o.right+1)%3],o2=P[(o.right+2)%3];
+  const u1=[o1[0]-V[0],o1[1]-V[1]],m1=Math.hypot(...u1),a=[V[0]+u1[0]/m1*13,V[1]+u1[1]/m1*13];
+  const u2=[o2[0]-V[0],o2[1]-V[1]],m2=Math.hypot(...u2),b=[V[0]+u2[0]/m2*13,V[1]+u2[1]/m2*13];
+  s+=`<path d="M${a[0]} ${a[1]} L${a[0]+b[0]-V[0]} ${a[1]+b[1]-V[1]} L${b[0]} ${b[1]}" fill="none" stroke="#2B211A" stroke-width="2"/>`}
+ (o.ticks||[]).forEach(p=>{const A=P[p[0]],B=P[p[1]],mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2,dx=B[0]-A[0],dy=B[1]-A[1],m=Math.hypot(dx,dy),nx=-dy/m,ny=dx/m;
+  s+=`<line x1="${mx-5*nx}" y1="${my-5*ny}" x2="${mx+5*nx}" y2="${my+5*ny}" stroke="#0F7B6C" stroke-width="2.5"/>`});
+ (o.labels||[]).forEach((t,i)=>{if(!t)return;const V=P[i],o1=P[(i+1)%3],o2=P[(i+2)%3];
+  const u1=[o1[0]-V[0],o1[1]-V[1]],m1=Math.hypot(...u1),u2=[o2[0]-V[0],o2[1]-V[1]],m2=Math.hypot(...u2);
+  let bb=[u1[0]/m1+u2[0]/m2,u1[1]/m1+u2[1]/m2];const mb=Math.hypot(...bb);bb=[bb[0]/mb,bb[1]/mb];
+  const isQ=t==='?';s+=`<text x="${V[0]+bb[0]*(isQ?15:18)}" y="${V[1]+bb[1]*(isQ?15:18)+4}" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="${isQ?15:12}" fill="${isQ?'#E4572E':'#2B211A'}">${t}</text>`});
+ return s+'</svg>'}
+const EQT=[[0,1],[1,2],[0,2]],ISOT=[[0,2],[1,2]];
+
+/* ---------- types ---------- */
+const TYPES=['right','eq','iso','sca'];
+const TNAME={right:{en:'Right triangle',id:'Segitiga siku-siku'},eq:{en:'Equilateral triangle',id:'Segitiga sama sisi'},iso:{en:'Isosceles triangle',id:'Segitiga sama kaki'},sca:{en:'Scalene triangle',id:'Segitiga sembarang'}};
+const TSUB={right:{en:'one 90° angle',id:'satu sudut 90°'},eq:{en:'all sides equal',id:'semua sisi sama'},iso:{en:'2 equal sides',id:'2 sisi sama'},sca:{en:'all different',id:'semua berbeda'}};
+const TFACTS={
+ right:{sum:'90° + a° + b° = 180°',f:[['The little square marks a right angle: exactly 90°.','Tanda kotak kecil menunjukkan sudut siku-siku: tepat 90°.'],['The other two angles always add up to 90°.','Dua sudut lainnya selalu berjumlah 90°.']]},
+ eq:{sum:'60° + 60° + 60° = 180°',f:[['All 3 sides are equal (3 tick marks).','Ketiga sisi sama panjang (3 tanda tick).'],['All 3 angles are exactly 60°.','Ketiga sudutnya tepat 60°.']]},
+ iso:{sum:'a° + a° + c° = 180°',f:[['2 equal sides (tick marks) → 2 equal base angles.','2 sisi sama (tanda tick) → 2 sudut alas sama besar.'],['The vertex angle can be any size.','Sudut puncaknya bisa berukuran bebas.']]},
+ sca:{sum:'a° + b° + c° = 180° (a ≠ b ≠ c)',f:[['No equal sides and no equal angles.','Tidak ada sisi atau sudut yang sama besar.'],['It can look tall, wide or tilted!','Bentuknya bisa tinggi, lebar, atau miring!']]}};
+const TVIEW={right:{shape:'right',labels:['35°',null,'?'],right:1},eq:{shape:'eq',labels:['60°','60°','60°'],ticks:EQT},iso:{shape:'iso',labels:['70°','70°','40°'],ticks:ISOT},sca:{shape:'sca',labels:['50°','95°','35°']}};
+let curType='right';
+function selectType(t){curType=t;$$('#tList .tbtn').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+ $('#typeSvg').innerHTML=drawTri(TVIEW[t].shape,TVIEW[t]);
+ $('#typeSum').innerHTML=`<small>Angle sum · Jumlah sudut</small>${TFACTS[t].sum}`;
+ $('#typeFacts').innerHTML=TFACTS[t].f.map(f=>`<div><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${IC.check}"/></svg><span><span data-en="${f[0]}" data-id="${f[1]}">${lang==='en'?f[0]:f[1]}</span></span></div>`).join('')}
+ $('#tList').innerHTML=TYPES.map(t=>`<button class="tbtn" data-t="${t}"><h4>${TNAME[t].en} <em style="font-family:'Fraunces';font-style:italic;font-size:12.5px;color:var(--soft)">· ${TNAME[t].id}</em></h4><p>${TSUB[t].en} · ${TSUB[t].id}</p></button>`).join('');
+ $$('#tList .tbtn').forEach(b=>b.onclick=()=>selectType(b.dataset.t)); selectType('right');
+
+/* ---------- matching game ---------- */
+const EXP={eq:{en:'All three sides are equal (tick marks), so all three angles are equal — 60° each.',id:'Ketiga sisinya sama panjang (tanda tick), jadi ketiga sudutnya sama besar — masing-masing 60°.'},
+ iso:{en:'Two sides have tick marks (equal). Equal sides face equal angles — isosceles!',id:'Dua sisi bertanda tick (sama panjang). Sisi yang sama menghadap sudut yang sama — sama kaki!'},
+ right:{en:'The small square marks a 90° angle — that makes it a right triangle.',id:'Tanda kotak kecil menunjukkan sudut 90° — itu segitiga siku-siku.'},
+ sca:{en:'No equal sides and no equal angles — everything is different: scalene.',id:'Tidak ada sisi atau sudut yang sama besar — semuanya berbeda: sembarang.'}};
+const TCOLOR=['#E4572E','#0F7B6C','#E29B18','#7B5EA7'];
+let mRound=1,mScore=0,conn={},items=[],labels=[],drag=null,selected=null;
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+function makeItems(){const eq={t:'eq',shape:'eq',labels:['60°','60°','60°'],ticks:EQT};
+ const b=50+Math.floor(Math.random()*26),iso={t:'iso',shape:'iso',labels:[b+'°',b+'°',(180-2*b)+'°'],ticks:ISOT};
+ const r=20+Math.floor(Math.random()*51),right={t:'right',shape:'right',labels:[r+'°',null,'?'],right:1};
+ let a,c2,c3;do{a=25+Math.floor(Math.random()*81);c2=25+Math.floor(Math.random()*81);c3=180-a-c2}while(c3<20||c3>130||c3===a||c3===c2);
+ const sca={t:'sca',shape:'sca',labels:[a+'°',c2+'°',c3+'°']};return shuf([eq,iso,right,sca])}
+function newRound(){items=makeItems();labels=shuf([...TYPES]);conn={};selected=null;drag=null;
+ $('#mLines').innerHTML='';$('#tempLine').setAttribute('opacity',0);$('#matchExp').classList.add('hide');$('#matchExp').innerHTML='';
+ $('#mNext').classList.add('hide');setBI($('#mMsg'),'','','')||($('#mMsg').textContent='');
+ $('#mRound').textContent=(lang==='en'?'Round ':'Ronde ')+mRound+' / 5';
+ $('#mDots').innerHTML=Array.from({length:5},(_,i)=>`<i class="${i+1<mRound?'ok':i+1===mRound?'on':''}"></i>`).join('');
+ $('#triCol').innerHTML=items.map((it,i)=>`<figure class="match-node" data-i="${i}">${drawTri(it.shape,it)}<figcaption style="text-align:center;font-weight:900;font-size:12px;color:var(--soft)">△ ${i+1}</figcaption></figure>`).join('');
+ $('#labCol').innerHTML=labels.map((t,j)=>`<div class="match-label" data-j="${j}" data-t="${t}">${lang==='en'?TNAME[t].en:TNAME[t].id}</div>`).join('');
+ bindMatch();mCheckReset()}
+const mCheckReset=()=>{$$('#triCol .match-node').forEach(n=>n.classList.remove('v-ok','v-bad'));$$('#labCol .match-label').forEach(n=>n.classList.remove('hit-ok','hit-bad'))};
+const anchor=(el,side)=>{const r=el.getBoundingClientRect(),s=$('#matchStage').getBoundingClientRect();return[side==='r'?r.right-s.left:r.left-s.left,r.top-s.top+r.height/2]};
+function drawLine(i){const t=$(`#triCol [data-i="${i}"]`),l=$(`#labCol [data-j="${conn[i]}"]`);if(!l)return;
+ const[a,b]=anchor(t,'r'),[c,d]=anchor(l,'l');
+ $('#mLines').insertAdjacentHTML('beforeend',`<line data-l="${i}" x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${TCOLOR[i]}" stroke-width="4" stroke-linecap="round"/>`)}
+function redrawLines(){$('#mLines').innerHTML='';Object.keys(conn).forEach(i=>drawLine(+i))}
+window.addEventListener('resize',()=>{if($('#triCol').children.length)redrawLines()});
+function connect(i,j){for(const k in conn)if(conn[k]===+j||+k===+i)delete conn[k];
+ $$('#mLines line').forEach(l=>{if(l.dataset.l===''||![...Object.keys(conn)].includes(l.dataset.l))l.remove()});
+ conn[i]=+j;redrawLines();selectTri(null)}
+function selectTri(i){selected=i;$$('#triCol .match-node').forEach(n=>n.classList.toggle('sel',+n.dataset.i===i))}
+function bindMatch(){$$('#triCol .match-node').forEach(n=>{
+  n.addEventListener('pointerdown',e=>{e.preventDefault();drag={i:+n.dataset.i,moved:false,sx:e.clientX,sy:e.clientY};try{n.setPointerCapture(e.pointerId)}catch(_){}});
+  n.addEventListener('pointermove',e=>{if(!drag||drag.i!==+n.dataset.i)return;
+   if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>8)drag.moved=true;
+   if(drag.moved){const[a,b]=anchor(n,'r'),s=$('#matchStage').getBoundingClientRect(),t=$('#tempLine');
+    t.setAttribute('x1',a);t.setAttribute('y1',b);t.setAttribute('x2',e.clientX-s.left);t.setAttribute('y2',e.clientY-s.top);t.setAttribute('opacity',1)}});
+  n.addEventListener('pointerup',e=>{const t=$('#tempLine');t.setAttribute('opacity',0);
+   if(!drag)return;
+   if(!drag.moved){selectTri(selected===drag.i?null:drag.i)}
+   else{const el=document.elementFromPoint(e.clientX,e.clientY);const lab=el&&el.closest('.match-label');
+    if(lab)connect(drag.i,+lab.dataset.j)} drag=null})});
+ $$('#labCol .match-label').forEach(l=>l.onclick=()=>{if(selected!=null)connect(selected,+l.dataset.j)})}
+ $('#mCheck').onclick=()=>{if(Object.keys(conn).length<4){setBI($('#mMsg'),'Connect all four triangles first!','Hubungkan dulu keempat segitiganya!');$('#mMsg').className='bad';return}
+ setBI($('#mMsg'),'','','')||($('#mMsg').textContent='');mCheckReset();
+ let ok=0,rows='';
+ items.forEach((it,i)=>{const good=conn[i]!==undefined&&labels[conn[i]]===it.t;if(good)ok++;
+  $(`#triCol [data-i="${i}"]`).classList.add(good?'v-ok':'v-bad');
+  if(conn[i]!==undefined)$(`#labCol [data-j="${conn[i]}"]`).classList.add(good?'hit-ok':'hit-bad');
+  rows+=`<div class="exp-row"><span class="exp-tri">${drawTri(it.shape,it)}</span><span><b>△ ${i+1} — <span data-en="${TNAME[it.t].en}" data-id="${TNAME[it.t].id}">${lang==='en'?TNAME[it.t].en:TNAME[it.t].id}</span>.</b> <span data-en="${EXP[it.t].en}" data-id="${EXP[it.t].id}">${lang==='en'?EXP[it.t].en:EXP[it.t].id}</span>${conn[i]!==undefined?(good?` <b class="ok" data-en="✓ Your match was correct!" data-id="✓ Jawabanmu benar!">✓ Your match was correct!</b>`:` <b class="bad" data-en="✗ You said: ${TNAME[labels[conn[i]]].en}." data-id="✗ Jawabanmu: ${TNAME[labels[conn[i]]].id}.">✗ You said: ${lang==='en'?TNAME[labels[conn[i]]].en:TNAME[labels[conn[i]]].id}.</b>`):''}</span></div>`});
+ if(good=>1){}
+ for(let i=0;i<items.length;i++){}
+ mScore+=ok;$$('#mDots i')[mRound-1].className=ok===4?'ok':'bad';
+ $('#matchExp').innerHTML=rows;$('#matchExp').classList.remove('hide');
+ if(mRound===5){setBI($('#mMsg'),`All 5 rounds done! Your score: ${mScore} / 20. ${mScore===20?'PERFECT! 🏆':'Great effort!'}`,`5 ronde selesai! Skormu: ${mScore} / 20. ${mScore===20?'SEMPURNA! 🏆':'Kerja bagus!'}`);$('#mMsg').className=ok>=3?'ok':'bad'}
+ else{$('#mNext').classList.remove('hide');setBI($('#mMsg'),`You matched ${ok} of 4 correctly.`,'Kamu mencocokkan '+ok+' dari 4 dengan benar.');$('#mMsg').className=ok===4?'ok':'bad'}};
+ $('#mNext').onclick=()=>{mRound++;newRound()};
+newRound();
+
+/* ---------- examples ---------- */
+ $('#ex1Svg').innerHTML=drawTri('gen',{labels:['65°','48°','?']});
+ $('#ex2Svg').innerHTML=drawTri('iso',{labels:['?','?','40°'],ticks:ISOT});
+function fillSteps(){const S=(n,en,id)=>`<div class="step"><span class="sn">${n}</span><span data-en="${en}" data-id="${id}">${lang==='en'?en:id}</span></div>`;
+ $('#steps1').innerHTML=S(1,'Angles in a triangle add up to 180°.','Jumlah sudut dalam segitiga adalah 180°.')+S(2,'65° + 48° = 113°','65° + 48° = 113°')+S(3,'x = 180° − 113° = 67°','x = 180° − 113° = 67°');
+ $('#steps2').innerHTML=S(1,'Two equal sides → the two base angles are equal (both are x).','Dua sisi sama panjang → kedua sudut alas sama besar (keduanya x).')+S(2,'180° − 40° = 140° for the two base angles together.','180° − 40° = 140° untuk jumlah kedua sudut alas.')+S(3,'140° ÷ 2 = 70° each.','140° ÷ 2 = 70° masing-masing.')}
+fillSteps();
+ $$('[data-ex]').forEach(b=>b.onclick=()=>$('#steps'+b.dataset.ex).classList.toggle('hide'));
+
+/* ---------- 20-question practice ---------- */
+const Q=[{s:'gen',l:['70°','60°','?'],a:50},{s:'right',l:['35°',null,'?'],a:55},{s:'iso',l:['55°','55°','?'],tk:1,a:70},{s:'iso',l:[null,'?','80°'],tk:1,a:50},{s:'gen',l:['120°','30°','?'],a:30},{s:'right',l:['45°',null,'?'],a:45},{s:'eq',l:[null,null,'?'],tk:1,a:60},{s:'gen',l:['75°','25°','?'],a:80},{s:'iso',l:['40°','40°','?'],tk:1,a:100},{s:'right',l:['62°',null,'?'],a:28},{s:'iso',l:[null,'?','50°'],tk:1,a:65},{s:'gen',l:['88°','31°','?'],a:61},{s:'right',l:['18°',null,'?'],a:72},{s:'iso',l:[null,'?','36°'],tk:1,a:72},{s:'gen',l:['105°','45°','?'],a:30},{s:'right',l:['57°',null,'?'],a:33},{s:'gen',l:['47°','58°','?'],a:75},{s:'iso',l:['72°','72°','?'],tk:1,a:36},{s:'gen',l:['130°','20°','?'],a:30},{s:'right',l:['41°',null,'?'],a:49}];
+const num=s=>parseInt(s);
+function solHTML(q){const L=[];
+ if(q.s==='gen'){L.push(['Angles in a triangle add up to 180°.','Jumlah sudut dalam segitiga adalah 180°.'],[`${q.l[0]} + ${q.l[1]} + x = 180°`,`${q.l[0]} + ${q.l[1]} + x = 180°`],[`x = 180° − ${num(q.l[0])}° − ${num(q.l[1])}° = ${q.a}°`,`x = 180° − ${num(q.l[0])}° − ${num(q.l[1])}° = ${q.a}°`])}
+ else if(q.s==='right'){L.push(['The right angle is 90°, so the two acute angles add up to 90°.','Sudut siku-sikunya 90°, jadi dua sudut lancipnya berjumlah 90°.'],[`x = 90° − ${num(q.l[0])}° = ${q.a}°`,`x = 90° − ${num(q.l[0])}° = ${q.a}°`])}
+ else if(q.s==='iso'&&q.l[0]&&q.l[0]!==null&&q.l[0].includes('°')&&q.l[1]&&q.l[1].includes('°')){L.push(['The tick marks show two equal sides, so the two base angles are equal.','Tanda tick menunjukkan dua sisi sama panjang, jadi kedua sudut alasnya sama besar.'],[`x = 180° − 2 × ${num(q.l[0])}° = ${q.a}°`,`x = 180° − 2 × ${num(q.l[0])}° = ${q.a}°`])}
+ else if(q.s==='iso'){L.push(['Two equal sides → the two base angles are equal (both x).','Dua sisi sama panjang → kedua sudut alas sama besar (keduanya x).'],[`2x + ${num(q.l[2])}° = 180° → x = (180° − ${num(q.l[2])}°) ÷ 2 = ${q.a}°`,`2x + ${num(q.l[2])}° = 180° → x = (180° − ${num(q.l[2])}°) ÷ 2 = ${q.a}°`])}
+ else{L.push(['All sides are equal → all angles are equal.','Semua sisi sama panjang → semua sudut sama besar.'],['x = 180° ÷ 3 = 60°','x = 180° ÷ 3 = 60°'])}
+ return L.map(p=>`<div class="sol-line" data-en="${p[0]}" data-id="${p[1]}">${lang==='en'?p[0]:p[1]}</div>`).join('')}
+let qScore=0;
+ $('#quizList').innerHTML=Q.map((q,i)=>`<div class="qitem" id="q${i}">
+ <span class="qnum">${i+1}</span>
+ <div class="qsvg">${drawTri(q.s,{labels:q.l,ticks:q.tk?EQT:null,right:q.s==='right'?1:null})}</div>
+ <div class="qbody"><div class="qq" data-en="Find the missing angle x." data-id="Tentukan besar sudut x yang belum diketahui.">Find the missing angle x.</div>
+ <div class="qrow"><span class="xeq">x =</span><input type="number" min="1" max="179" id="qin${i}" placeholder="?"><span class="xeq">°</span>
+ <button class="btn teal sm" data-qc="${i}"><span data-ic="check"></span><span data-en="Check" data-id="Periksa">Check</span></button>
+ <button class="btn sm" data-qs="${i}"><span data-ic="bulb"></span><span data-en="Solution" data-id="Pembahasan">Solution</span></button></div>
+ <div class="fb" id="qfb${i}"></div><div class="qsol" id="qso${i}">${solHTML(q)}</div></div></div>`).join('');
+ $$('[data-qc]').forEach(b=>b.onclick=()=>{const i=+b.dataset.qc,v=parseInt($('#qin'+i).value),fb=$('#qfb'+i),box=$('#q'+i);
+ if(v===Q[i].a){if(!box.dataset.done){box.dataset.done=1;qScore++;$('#qScore').textContent=qScore+' / 20';$('#qFill').style.width=(qScore/20*100)+'%'}
+  fb.className='fb ok';setBI(fb,'Correct! Great job!','Benar! Kerja bagus!');box.classList.add('okstate');$('#qin'+i).disabled=true;b.disabled=true}
+ else{fb.className='fb bad';setBI(fb,'Not yet — check the given angles and use 180°.','Belum tepat — perhatikan sudut yang diketahui dan gunakan 180°.');fb.classList.add('shake');setTimeout(()=>fb.classList.remove('shake'),500)}});
+ $$('[data-qs]').forEach(b=>b.onclick=()=>$('#qso'+b.dataset.qs).classList.toggle('show'));
+
+/* ---------- reflection stars ---------- */
+ $('#stars').innerHTML=[1,2,3,4,5].map(n=>`<button data-s="${n}">★</button>`).join('');
+ $$('#stars button').forEach(b=>b.onclick=()=>{const s=+b.dataset.s;$$('#stars button').forEach(x=>x.classList.toggle('on',+x.dataset.s<=s))});
+
+/* init */
+setLang('en'); goto(0);
+</script>
+</body>
+</html>
