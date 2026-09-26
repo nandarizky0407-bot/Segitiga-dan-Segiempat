@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triangle Types Lab · Year 5 Mathematics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,900;1,9..144,600&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#FBF3E4;--card:#FFFDF6;--ink:#2B211A;--soft:#6F604F;--line:#E4D5BC;--red:#E4572E;--teal:#0F7B6C;--gold:#E29B18;--sh:rgba(43,33,26,.15)}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:'Nunito',sans-serif;color:var(--ink);overflow:hidden;background:var(--paper);
+ background-image:linear-gradient(rgba(120,90,40,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(120,90,40,.05) 1px,transparent 1px),linear-gradient(rgba(120,90,40,.09) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(120,90,40,.09) 1.5px,transparent 1.5px);
+ background-size:28px 28px,28px 28px,140px 140px,140px 140px}
+#topbar{position:fixed;inset:0 0 auto 0;height:58px;z-index:50;display:flex;align-items:center;gap:12px;padding:0 18px;background:rgba(251,243,228,.93);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink)}
+.brand{display:flex;align-items:center;gap:9px;font-family:'Fraunces';font-weight:900;font-size:17.5px}
+#topbar .sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border:2px solid var(--ink);border-radius:999px;background:var(--card);font-weight:800;font-size:13px}
+.chip.hide{display:none}
+.lang{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--card)}
+.lang button{border:0;background:transparent;font:800 12.5px 'Nunito';padding:6px 13px;cursor:pointer;color:var(--ink)}
+.lang button.on{background:var(--ink);color:var(--paper)}
+#counter{font-weight:900;font-size:13px;color:var(--soft);min-width:52px;text-align:right}
+#prog{position:absolute;left:0;bottom:-2px;height:3px;background:var(--red);width:0;transition:width .5s}
+#track{display:flex;height:100dvh;transition:transform .65s cubic-bezier(.7,0,.25,1)}
+.slide{flex:0 0 100vw;height:100%;overflow-y:auto;padding:82px clamp(16px,4vw,56px) 110px}
+.wrap{max-width:1120px;margin:0 auto}
+.kicker{font-weight:900;letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--red);margin-bottom:10px}
+h2.stitle{font-family:'Fraunces';font-weight:900;font-size:clamp(27px,3.8vw,44px);line-height:1.05}
+.lead{font-size:16px;color:var(--soft);font-weight:600;max-width:66ch;margin-top:10px;line-height:1.55}
+.cols{display:grid;gap:clamp(20px,3.2vw,40px);margin-top:24px}
+@media(min-width:921px){.c-2{grid-template-columns:1.02fr .98fr}}
+@media(max-width:920px){.cols{grid-template-columns:1fr}}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--sh);padding:clamp(16px,2.3vw,26px)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:800 14px 'Nunito';padding:10px 17px;border-radius:999px;border:2px solid var(--ink);cursor:pointer;background:var(--card);color:var(--ink);box-shadow:4px 4px 0 var(--sh);transition:transform .15s,box-shadow .15s;text-decoration:none}
+.btn:hover{transform:translate(-1px,-2px);box-shadow:5px 6px 0 var(--sh)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--sh)}
+.btn.primary{background:var(--red);color:#FFFDF6}.btn.teal{background:var(--teal);color:#FFFDF6}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn.sm{padding:7px 12px;font-size:13px}
+input[type=text],input[type=number]{font:800 15px 'Nunito';padding:9px 12px;border:2px solid var(--ink);border-radius:11px;background:var(--card);color:var(--ink);width:100%}
+input:focus{outline:3px solid var(--gold);outline-offset:2px}
+.ok{color:var(--teal)}.bad{color:var(--red)}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake .45s}
+.rev{opacity:0}.slide.active .rev{animation:rise .6s var(--d,0s) both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.navbtns{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;gap:10px}
+.iconbtn{width:52px;height:52px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;display:grid;place-items:center;box-shadow:4px 4px 0 var(--sh);transition:transform .15s}
+.iconbtn:hover{transform:translateY(-2px)}.iconbtn:disabled{opacity:.3;pointer-events:none}
+#dots{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:49}
+#dots.locked{opacity:.3;pointer-events:none}
+#dots .dot{width:11px;height:11px;border:2px solid var(--ink);border-radius:50%;background:transparent;cursor:pointer;padding:0}
+#dots .dot.on{background:var(--red)}
+.cover-grid{display:grid;gap:clamp(22px,4vw,54px);align-items:center;min-height:calc(100dvh - 210px)}
+@media(min-width:921px){.cover-grid{grid-template-columns:1.05fr .95fr}}
+h1 .t-top{display:block;font-family:'Fraunces';font-style:italic;font-weight:600;font-size:clamp(21px,2.8vw,34px)}
+h1 .t-big{display:block;font-family:'Fraunces';font-weight:900;font-size:clamp(46px,6.4vw,86px);color:var(--red);line-height:.95;letter-spacing:-.01em}
+.name-label{display:block;font-weight:900;font-size:16px;margin:22px 0 10px}
+.name-row{display:flex;gap:12px;max-width:520px;flex-wrap:wrap}
+.name-row input{flex:1;min-width:190px}
+.err{color:var(--red);font-weight:800;font-size:13.5px;margin-top:9px;min-height:18px}
+#coverArt svg{width:100%;max-width:440px;display:block;margin:0 auto;animation:bob 5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;margin-top:24px}
+.tcard{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--sh);padding:14px;cursor:pointer;text-align:center;transition:.15s}
+.tcard:hover{transform:translateY(-4px);box-shadow:5px 9px 0 var(--sh)}
+.tcard b{display:block;font-family:'Fraunces';font-size:16.5px;margin-top:6px}
+.tcard small{display:block;font-weight:700;color:var(--soft);font-size:12px;margin-bottom:4px}
+.tcard>span{font-weight:800;font-size:12.5px;color:var(--red)}
+.srow{display:flex;align-items:center;gap:12px;margin-top:12px}
+.srow label{font-weight:900;font-size:13.5px;min-width:108px}
+input[type=range]{flex:1;accent-color:var(--red);height:26px;cursor:pointer}
+output{font-family:'Fraunces';font-weight:900;min-width:56px;text-align:right;font-size:17px}
+.ctlrow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.eqline{margin-top:14px;border:2px solid var(--ink);border-radius:12px;background:var(--card);padding:10px 14px;font-family:'Fraunces';font-weight:900;font-size:19px;text-align:center}
+.plist{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.plist div{display:flex;gap:9px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.45}
+.plist svg{color:var(--teal);flex:none;margin-top:2px;width:17px;height:17px}
+.fcard{border:2px solid var(--ink);border-left:8px solid var(--gold);border-radius:12px;background:var(--card);padding:12px 14px;margin-top:16px}
+.fcard b{display:block;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+.fcard span{font-family:'Fraunces';font-weight:900;font-size:17.5px;line-height:1.4}
+.subex{font-weight:700;font-size:13.5px;color:var(--soft);margin-top:12px;line-height:1.5}
+.scorebar{display:flex;align-items:center;gap:13px;border:2px solid var(--ink);border-radius:14px;background:var(--card);padding:10px 16px;box-shadow:4px 4px 0 var(--sh);font-weight:900;font-size:14px;margin-top:16px;flex-wrap:wrap}
+.scorebar .fw{flex:1;min-width:120px;height:12px;border:2px solid var(--ink);border-radius:99px;overflow:hidden}
+.scorebar .fl{height:100%;background:var(--teal);width:0;transition:width .4s}
+#ql-right,#ql-eq,#ql-iso,#ql-sca{display:grid;gap:15px;margin-top:16px}
+@media(min-width:1000px){#ql-right,#ql-eq,#ql-iso,#ql-sca{grid-template-columns:1fr 1fr}}
+.qitem{display:flex;gap:12px;background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--sh);padding:12px}
+.qitem.okstate{border-color:var(--teal)}
+.qnum{width:29px;height:29px;flex:none;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:900;font-size:12.5px}
+.qsvg{flex:none;width:126px}.qsvg svg{width:100%;display:block}
+.qbody{flex:1;min-width:0}
+.qq{font-weight:900;font-size:14px;margin-bottom:8px}
+.qrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qrow .xeq{font-weight:900;font-family:'Fraunces';font-size:17px}
+.qrow input{width:78px;padding:7px 9px;text-align:center}
+.fb{font-weight:800;margin-top:9px;min-height:21px;font-size:13.5px}
+.qsol{margin-top:8px;border-top:2px dashed var(--line);padding-top:8px;display:none}
+.qsol.show{display:block}
+.sol-line{font-weight:700;font-size:13px;line-height:1.5;margin-bottom:4px}
+#mStage{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(22px,8vw,120px);min-height:380px;margin-top:14px;user-select:none}
+.mcol{display:flex;flex-direction:column;justify-content:space-around;gap:12px}
+.match-node{border:2px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:5px 5px 0 var(--sh);padding:8px 10px 6px;cursor:pointer;transition:.15s}
+.match-node.sel{transform:translateY(-3px);border-color:var(--red);box-shadow:5px 7px 0 var(--sh)}
+.match-node.v-ok{border-color:var(--teal)}.match-node.v-bad{border-color:var(--red)}
+.match-node svg{width:100%;max-width:172px;display:block;margin:0 auto}
+.match-label{border:2.5px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:5px 5px 0 var(--sh);padding:18px 12px;text-align:center;font-family:'Fraunces';font-weight:900;font-size:clamp(14px,1.8vw,19px);cursor:pointer;touch-action:manipulation}
+.match-label.hit-ok{border-color:var(--teal);background:#E4F2EE}
+.match-label.hit-bad{border-color:var(--red);background:#FBE7DF}
+#mOverlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+#mOverlay line{stroke-width:4;stroke-linecap:round}
+.mctl{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
+#mRound{font-weight:900;font-size:14px;color:var(--soft)}
+#mDots{display:flex;gap:7px}
+#mDots i{width:11px;height:11px;border:2px solid var(--ink);border-radius:50%}
+#mDots i.on{background:var(--gold)}#mDots i.ok{background:var(--teal)}#mDots i.bad{background:var(--red)}
+#mMsg{font-weight:900;margin-top:8px;min-height:21px;font-size:14.5px}
+#mExp{margin-top:12px}
+#mExp .exp-row{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:2px dashed var(--line);font-weight:700;font-size:13.5px;line-height:1.5}
+#mExp .exp-row:last-child{border-bottom:0}
+.exp-tri{width:62px;flex:none;background:var(--card)}
+.ridclue{font-family:'Fraunces';font-style:italic;font-weight:600;font-size:clamp(18px,2.3vw,25px);line-height:1.35;text-align:center;min-height:76px}
+.ridbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:18px}
+.ridbtn{border:2px solid var(--ink);border-radius:14px;background:var(--card);box-shadow:4px 4px 0 var(--sh);padding:14px 10px;font:900 15px 'Fraunces';cursor:pointer;transition:.15s;color:var(--ink)}
+.ridbtn:hover{transform:translateY(-2px)}
+.ridbtn.ok{background:var(--teal);color:#FFFDF6}
+.ridbtn.bad{background:var(--red);color:#FFFDF6}
+.ridbtn:disabled{cursor:default;opacity:.9}
+.fstage{min-height:190px;border:2px solid var(--ink);border-radius:18px;background:var(--card);box-shadow:6px 6px 0 var(--sh);padding:26px;display:grid;place-items:center;text-align:center}
+#fcText{font-family:'Fraunces';font-weight:900;font-size:clamp(18px,2.5vw,27px);line-height:1.35;max-width:60ch}
+.fyesno{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.fyesno .btn{font-size:16.5px;padding:12px 32px}
+#fcV{margin-top:16px;font-weight:900;text-align:center;min-height:22px;font-size:16px}
+#fcExp{text-align:center;font-weight:700;color:var(--soft);font-size:14px;margin-top:4px;min-height:20px}
+.rrow{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:2px dashed var(--line)}
+.rname{min-width:172px;font-weight:800;font-size:13.5px}
+.rbar{flex:1;height:14px;border:2px solid var(--ink);border-radius:99px;overflow:hidden;background:var(--card)}
+.rfill{height:100%;background:var(--teal);transition:width .5s}
+.rval{font-family:'Fraunces';font-weight:900;min-width:60px;text-align:right;font-size:15px}
+.rtotal{text-align:center;margin-top:22px}
+.rtotal b{font-family:'Fraunces';font-size:clamp(30px,4vw,46px);display:block;color:var(--red)}
+.starline{font-size:32px;letter-spacing:6px;display:block;margin:6px 0}
+.starline em{color:var(--gold);font-style:normal}.starline{color:#D8CBB6}
+.rtotal span:last-child{font-weight:800;font-size:15px}
+.sumgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:22px}
+.sumcard{border:2px solid var(--ink);border-radius:16px;background:var(--card);box-shadow:5px 5px 0 var(--sh);padding:16px}
+.sumcard b{font-family:'Fraunces';font-size:25px;display:block;color:var(--red)}
+.sumcard span{font-weight:700;font-size:13px;color:var(--soft);line-height:1.45;display:block;margin-top:4px}
+.stars{display:flex;gap:8px;margin:12px 0}
+.stars button{background:none;border:0;cursor:pointer;font-size:33px;line-height:1;color:#D8CBB6;transition:transform .15s,color .15s}
+.stars button.on{color:var(--gold);transform:scale(1.15)}
+.thanks{text-align:center;padding:40px 0}
+.thanks .big{font-family:'Fraunces';font-weight:900;font-size:clamp(36px,5.6vw,70px);color:var(--red);line-height:1.05;margin-top:8px}
+.mini-tri{display:inline-block;animation:bob 3s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="brand"><svg width="23" height="23" viewBox="0 0 24 24"><polygon points="12,3 22,21 2,21" fill="#E4572E" stroke="#2B211A" stroke-width="2" stroke-linejoin="round"/></svg>Triangle Types Lab</div>
+  <div class="sp"></div>
+  <span class="chip hide" id="nameChip"></span>
+  <div class="lang"><button id="btnEN" class="on">EN</button><button id="btnID">ID</button></div>
+  <span id="counter">1 / 17</span>
+  <div id="prog"></div>
+</div>
+
+<div id="track">
+
+<!-- 0 · COVER -->
+<section class="slide active">
+ <div class="wrap cover-grid">
+  <div>
+   <div class="kicker rev">Year 5 · Mathematics · Cambridge</div>
+   <h1 class="rev" style="--d:.08s"><span class="t-top" data-en="Let's classify…" data-id="Ayo kelompokkan…">Let's classify…</span><span class="t-big" data-en="TRIANGLE TYPES" data-id="JENIS SEGITIGA">TRIANGLE TYPES</span></h1>
+   <p class="lead rev" style="--d:.16s" data-en="Right, equilateral, isosceles, scalene — meet all four and master their angles." data-id="Siku-siku, sama sisi, sama kaki, sembarang — kenali keempatnya dan kuasai sudutnya.">Right, equilateral, isosceles, scalene — meet all four and master their angles.</p>
+   <label class="name-label rev" style="--d:.24s" for="nameInput"><span data-en="Hello, mathematician! What's your name?" data-id="Hai, matematikawan! Siapa namamu?">Hello, mathematician! What's your name?</span></label>
+   <div class="name-row rev" style="--d:.3s">
+     <input type="text" id="nameInput" data-phen="Type your name here…" data-pid="Tulis namamu di sini…" placeholder="Type your name here…" maxlength="24">
+     <button class="btn primary" id="startBtn"><span data-ic="right"></span><span data-en="Start" data-id="Mulai">Start</span></button>
+   </div>
+   <div class="err" id="nameErr"></div>
+  </div>
+  <div id="coverArt" class="rev" style="--d:.2s">
+   <svg viewBox="0 0 440 400">
+    <circle cx="230" cy="210" r="150" fill="none" stroke="#2B211A" stroke-width="2" stroke-dasharray="6 8" opacity=".5"/>
+    <polygon points="150,60 60,330 400,300" fill="#E29B18" stroke="#2B211A" stroke-width="2.5" stroke-linejoin="round" transform="translate(16,16)" opacity=".85"/>
+    <polygon points="150,60 60,330 400,300" fill="#0F7B6C" stroke="#2B211A" stroke-width="2.5" stroke-linejoin="round" transform="translate(8,8)" opacity=".9"/>
+    <polygon points="150,60 60,330 400,300" fill="#E4572E" stroke="#2B211A" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M150 100 A46 46 0 0 1 190 112" fill="none" stroke="#2B211A" stroke-width="2.5"/>
+    <path d="M100 305 A52 52 0 0 0 152 330" fill="none" stroke="#2B211A" stroke-width="2.5"/>
+    <path d="M355 305 A50 50 0 0 0 350 262" fill="none" stroke="#2B211A" stroke-width="2.5"/>
+    <circle cx="330" cy="80" r="42" fill="#FFFDF6" stroke="#2B211A" stroke-width="2.5"/>
+    <text x="330" y="90" text-anchor="middle" font-family="Fraunces,serif" font-weight="900" font-size="26" fill="#2B211A">180°</text>
+   </svg>
+  </div>
+ </div>
+</section>
+
+<!-- 1 · OVERVIEW -->
+<section class="slide"><div class="wrap" id="s-ov"></div></section>
+<!-- 2-5 · DEEP DIVES -->
+<section class="slide"><div class="wrap" id="dd-right"></div></section>
+<section class="slide"><div class="wrap" id="dd-eq"></div></section>
+<section class="slide"><div class="wrap" id="dd-iso"></div></section>
+<section class="slide"><div class="wrap" id="dd-sca"></div></section>
+<!-- 6-9 · PRACTICE -->
+<section class="slide"><div class="wrap" id="ps-right"></div></section>
+<section class="slide"><div class="wrap" id="ps-eq"></div></section>
+<section class="slide"><div class="wrap" id="ps-iso"></div></section>
+<section class="slide"><div class="wrap" id="ps-sca"></div></section>
+<!-- 10 · MATCHING -->
+<section class="slide"><div class="wrap" id="s-match"></div></section>
+<!-- 11 · RIDDLE -->
+<section class="slide"><div class="wrap" id="s-riddle"></div></section>
+<!-- 12 · FLASHCARDS -->
+<section class="slide"><div class="wrap" id="s-flash"></div></section>
+<!-- 13 · RESULTS -->
+<section class="slide"><div class="wrap" id="s-results"></div></section>
+<!-- 14 · CONCLUSION -->
+<section class="slide">
+ <div class="wrap">
+  <div class="kicker rev">Wrap-up</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="Four triangles, one big idea" data-id="Empat segitiga, satu ide besar">Four triangles, one big idea</h2>
+  <div class="sumgrid">
+    <div class="sumcard rev" style="--d:.08s"><b>90°</b><span data-en="A right triangle has exactly one right angle; its two acute angles always make 90° together." data-id="Segitiga siku-siku punya tepat satu sudut siku; dua sudut lancipnya selalu berjumlah 90°.">A right triangle has exactly one right angle; its two acute angles always make 90° together.</span></div>
+    <div class="sumcard rev" style="--d:.12s"><b>60°</b><span data-en="Every angle of an equilateral triangle is 180° ÷ 3 = 60°, whatever its size." data-id="Setiap sudut segitiga sama sisi adalah 180° ÷ 3 = 60°, apa pun ukurannya.">Every angle of an equilateral triangle is 180° ÷ 3 = 60°, whatever its size.</span></div>
+    <div class="sumcard rev" style="--d:.16s"><b>2 = 2</b><span data-en="Isosceles: two equal sides always face two equal base angles." data-id="Sama kaki: dua sisi sama selalu menghadap dua sudut alas yang sama besar.">Isosceles: two equal sides always face two equal base angles.</span></div>
+    <div class="sumcard rev" style="--d:.2s"><b>180°</b><span data-en="Scalene or not — the angles of every triangle always total 180°." data-id="Sembarang atau bukan — jumlah sudut setiap segitiga selalu 180°.">Scalene or not — the angles of every triangle always total 180°.</span></div>
+  </div>
+  <div class="fcard rev" style="--d:.26s;max-width:560px"><b data-en="Golden rule" data-id="Aturan emas">Golden rule</b><span data-en="Equal sides ↔ equal angles. Use it to check every answer!" data-id="Sisi sama ↔ sudut sama. Gunakan untuk memeriksa setiap jawaban!">Equal sides ↔ equal angles. Use it to check every answer!</span></div>
+ </div>
+</section>
+<!-- 15 · REFLECTION -->
+<section class="slide">
+ <div class="wrap" style="max-width:720px">
+  <div class="kicker rev">Reflection</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="How do you feel about triangles now?" data-id="Bagaimana perasaanmu tentang segitiga sekarang?">How do you feel about triangles now?</h2>
+  <div class="card rev" style="--d:.12s;margin-top:20px">
+    <div class="stars" id="stars"></div>
+    <p style="font-weight:800;font-size:14.5px;margin-top:8px" data-en="One thing I will remember from today…" data-id="Satu hal yang akan saya ingat dari hari ini…">One thing I will remember from today…</p>
+    <input type="text" style="margin-top:8px" data-phen="Write your reflection here…" data-pid="Tulis refleksimu di sini…" placeholder="Write your reflection here…">
+  </div>
+ </div>
+</section>
+<!-- 16 · THANK YOU -->
+<section class="slide">
+ <div class="wrap thanks">
+   <div class="mini-tri"><svg width="62" height="56" viewBox="0 0 64 58"><polygon points="32,4 60,54 4,54" fill="#E4572E" stroke="#2B211A" stroke-width="3" stroke-linejoin="round"/></svg></div>
+   <h2 class="stitle rev" style="--d:.05s" data-en="Mission complete!" data-id="Misi selesai!">Mission complete!</h2>
+   <div class="big rev" style="--d:.12s"><span data-en="Thank you for today," data-id="Terima kasih untuk hari ini,">Thank you for today,</span><br><span id="thanksName" style="color:var(--teal)">Mathematician!</span></div>
+   <p class="lead rev" style="--d:.2s;margin:16px auto 0;text-align:center" data-en="You are now an official Triangle Types Expert. Keep spotting triangles all around you!" data-id="Kamu resmi menjadi Ahli Jenis Segitiga. Terus amati segitiga di sekitarmu!">You are now an official Triangle Types Expert. Keep spotting triangles all around you!</p>
+   <div class="rev" style="--d:.28s;margin-top:24px"><button class="btn" id="restartBtn"><span data-ic="refresh"></span><span data-en="Back to the start" data-id="Kembali ke awal">Back to the start</span></button></div>
+ </div>
+</section>
+
+</div>
+
+<div id="dots" class="locked"></div>
+<div class="navbtns">
+  <button class="iconbtn" id="prevBtn" disabled><span data-ic="left"></span></button>
+  <button class="iconbtn" id="nextBtn" disabled><span data-ic="right"></span></button>
+</div>
+
+<script>
+/* ---------- icons & helpers ---------- */
+const IC={right:'M9 6l6 6-6 6',left:'M15 6l-6 6 6 6',check:'M4 12l5 5L20 7',x:'M6 6l12 12M18 6L6 18',bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-4 10c.6.6 1 1.3 1 2h6c0-.7.4-1.4 1-2a6 6 0 00-4-10z',refresh:'M21 12a9 9 0 11-3-6.7M21 3v6h-6',trophy:'M8 21h8M12 17v4M6 3h12v5a6 6 0 01-12 0V3zM6 5H3a3 3 0 003 4M18 5h3a3 3 0 01-3 4'};
+const ic=n=>`<svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="${IC[n]}"/></svg>`;
+document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const setBI=(el,en,id)=>{el.dataset.en=en;el.dataset.id=id;el.textContent=lang==='en'?en:id};
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+let lang='en',name='',started=false,slide=0;const N=17;
+const S={pr:{right:0,eq:0,iso:0,sca:0},match:0,rid:0,flash:0};
+function setLang(l){lang=l;$('#btnEN').classList.toggle('on',l==='en');$('#btnID').classList.toggle('on',l==='id');
+ $$('[data-en]').forEach(el=>el.textContent=l==='en'?el.dataset.en:el.dataset.id);
+ $$('[data-phen]').forEach(el=>el.placeholder=l==='en'?el.dataset.phen:el.dataset.pid);
+ if(slide===13)renderResults()}
+ $('#btnEN').onclick=()=>setLang('en');$('#btnID').onclick=()=>setLang('id');
+
+/* ---------- navigation ---------- */
+const dots=$('#dots');for(let i=0;i<N;i++){const d=document.createElement('button');d.className='dot';d.onclick=()=>goto(i);dots.appendChild(d)}
+function goto(i){if(!started&&i>0)i=0;slide=Math.max(0,Math.min(N-1,i));
+ $('#track').style.transform=`translateX(-${slide*100}vw)`;
+ $$('#dots .dot').forEach((d,k)=>d.classList.toggle('on',k===slide));
+ $('#counter').textContent=(slide+1)+' / '+N;$('#prog').style.width=(slide/(N-1)*100)+'%';
+ $('#prevBtn').disabled=slide===0||!started;$('#nextBtn').disabled=slide===N-1||!started;
+ $$('.slide').forEach((s,k)=>s.classList.toggle('active',k===slide));
+ if(slide===13)renderResults()}
+ $('#prevBtn').onclick=()=>goto(slide-1);$('#nextBtn').onclick=()=>goto(slide+1);
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key==='ArrowRight')goto(slide+1);if(e.key==='ArrowLeft')goto(slide-1)});
+ $('#startBtn').onclick=()=>{const v=$('#nameInput').value.trim();
+ if(v.length<2){setBI($('#nameErr'),'Please write your name first! (min. 2 letters)','Tulis namamu dulu ya! (min. 2 huruf)');$('#nameInput').classList.add('shake');setTimeout(()=>$('#nameInput').classList.remove('shake'),500);return}
+ name=v;started=true;$('#nameErr').textContent='';$('#nameChip').classList.remove('hide');$('#nameChip').textContent='★ '+name;
+ $('#dots').classList.remove('locked');$('#thanksName').textContent=name+'!';goto(1)};
+ $('#nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#startBtn').click()});
+ $('#restartBtn').onclick=()=>location.reload();
+
+/* ---------- SVG triangle engine ---------- */
+const un=(P,V)=>{const dx=P[0]-V[0],dy=P[1]-V[1],m=Math.hypot(dx,dy)||1;return[dx/m,dy/m]};
+function dynTri(verts,labels,o={}){
+ const xs=verts.map(p=>p[0]),ys=verts.map(p=>p[1]),pad=36;
+ const vx=Math.min(...xs)-pad,vy=Math.min(...ys)-pad,vw=Math.max(...xs)-vx+pad,vh=Math.max(...ys)-vy+pad;
+ let s=`<svg viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}" style="width:100%;max-width:${o.mw||420}px;display:block;margin:0 auto">`;
+ s+=`<polygon points="${verts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${o.fill||'#FFF6E8'}" stroke="#2B211A" stroke-width="3" stroke-linejoin="round"/>`;
+ for(let i=0;i<3;i++){const V=verts[i],u1=un(verts[(i+1)%3],V),u2=un(verts[(i+2)%3],V);
+  if(o.rightMark===i){const A=[V[0]+u1[0]*15,V[1]+u1[1]*15],B=[V[0]+u2[0]*15,V[1]+u2[1]*15];
+   s+=`<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} L${(A[0]+B[0]-V[0]).toFixed(1)} ${(A[1]+B[1]-V[1]).toFixed(1)} L${B[0].toFixed(1)} ${B[1].toFixed(1)}" fill="none" stroke="#2B211A" stroke-width="2.2"/>`}
+  else{const cr=u1[0]*u2[1]-u1[1]*u2[0],sw=cr>0?1:0,r=22;
+   s+=`<path d="M${(V[0]+u1[0]*r).toFixed(1)} ${(V[1]+u1[1]*r).toFixed(1)} A${r} ${r} 0 0 ${sw} ${(V[0]+u2[0]*r).toFixed(1)} ${(V[1]+u2[1]*r).toFixed(1)}" fill="none" stroke="#E29B18" stroke-width="2.6"/>`}
+  const t=labels&&labels[i];
+  if(t){let b=[u1[0]+u2[0],u1[1]+u2[1]];const m=Math.hypot(b[0],b[1])||1;b=[b[0]/m,b[1]/m];
+   s+=`<text x="${(V[0]+b[0]*35).toFixed(1)}" y="${(V[1]+b[1]*35+5).toFixed(1)}" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="15.5" fill="${t==='?'?'#E4572E':'#2B211A'}">${t}</text>`}}
+ (o.ticks||[]).forEach(k=>{const A=verts[k],B=verts[(k+1)%3],mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2,dx=B[0]-A[0],dy=B[1]-A[1],m=Math.hypot(dx,dy)||1,nx=-dy/m,ny=dx/m;
+  s+=`<line x1="${(mx-5*nx).toFixed(1)}" y1="${(my-5*ny).toFixed(1)}" x2="${(mx+5*nx).toFixed(1)}" y2="${(my+5*ny).toFixed(1)}" stroke="#0F7B6C" stroke-width="2.6"/>`});
+ return s+'</svg>'}
+const SHP={eq:[[20,112],[140,112],[80,8]],iso:[[20,112],[140,112],[80,18]],right:[[28,14],[28,112],[142,112]],sca:[[58,12],[12,112],[148,92]]};
+const drawTri=(sh,o={},mw=200)=>{const lb=o.labels||null;return dynTri(SHP[sh],lb,Object.assign({mw},o))};
+const capV=(v,cap=240)=>{const m=Math.min(...v.map(p=>p[1]));if(m<-cap){const s=cap/(-m);return v.map(p=>[p[0]*s,p[1]*s])}return v};
+
+/* ---------- type data ---------- */
+const TNAME={right:['Right triangle','Segitiga siku-siku'],eq:['Equilateral triangle','Segitiga sama sisi'],iso:['Isosceles triangle','Segitiga sama kaki'],sca:['Scalene triangle','Segitiga sembarang']};
+const TD={
+ right:{props:[['Has exactly one 90° angle (the square mark).','Tepat satu sudut 90° (tanda kotak).'],['The other two angles are always acute.','Dua sudut lainnya selalu lancip.'],['The two acute angles always add up to 90°.','Dua sudut lancipnya selalu berjumlah 90°.'],['By its sides, it can also be isosceles or scalene.','Berdasarkan sisinya, bisa juga sama kaki atau sembarang.']],
+  how:['Missing acute angle:  x = 90° − a°','Sudut lancip yang dicari:  x = 90° − a°'],
+  ex:['Example: a = 35° → x = 90° − 35° = 55°.','Contoh: a = 35° → x = 90° − 35° = 55°.']},
+ eq:{props:[['All three sides are equal (3 tick marks).','Ketiga sisi sama panjang (3 tanda tick).'],['All three angles are exactly 60°.','Ketiga sudutnya tepat 60°.'],['All angles are acute — never right, never obtuse.','Semua sudut lancip — tidak mungkin siku atau tumpul.'],['Perfectly symmetric: it looks the same from every side.','Simetri sempurna: tampak sama dari setiap sisi.']],
+  how:['Every angle:  x = 180° ÷ 3 = 60°','Setiap sudut:  x = 180° ÷ 3 = 60°'],
+  ex:['Big or small, the angles never change — only the sides do.','Besar atau kecil, sudutnya tak pernah berubah — hanya sisinya.']},
+ iso:{props:[['Exactly two sides are equal (tick marks).','Tepat dua sisi sama panjang (tanda tick).'],['The two base angles (opposite the equal sides) are equal.','Kedua sudut alas (menghadap sisi sama) sama besar.'],['The vertex angle sits between the two equal sides.','Sudut puncak berada di antara dua sisi sama.'],['It can be acute, right (45°–45°–90°) or obtuse.','Bisa lancip, siku-siku (45°–45°–90°), atau tumpul.']],
+  how:['x = (180° − vertex) ÷ 2   or   vertex = 180° − 2 × base','x = (180° − sudut puncak) ÷ 2   atau   sudut puncak = 180° − 2 × alas'],
+  ex:['Example: vertex = 40° → x = (180° − 40°) ÷ 2 = 70°.','Contoh: sudut puncak = 40° → x = (180° − 40°) ÷ 2 = 70°.']},
+ sca:{props:[['No equal sides and no equal angles.','Tidak ada sisi atau sudut yang sama.'],['All three angles are different.','Ketiga sudutnya berbeda semua.'],['It still obeys the 180° rule — always!','Tetap berlaku aturan 180° — selalu!'],['It can be acute, right or obtuse.','Bisa lancip, siku-siku, atau tumpul.']],
+  how:['Missing angle:  x = 180° − a° − b°','Sudut yang dicari:  x = 180° − a° − b°'],
+  ex:['Example: 50° and 60° → x = 180° − 50° − 60° = 70°.','Contoh: 50° dan 60° → x = 180° − 50° − 60° = 70°.']}};
+
+/* ---------- build overview ---------- */
+const OV=[['right',{labels:['55°',null,'35°'],rightMark:1},'One angle = 90°','Satu sudut = 90°'],
+ ['eq',{labels:['60°','60°','60°'],ticks:[0,1,2]},'All angles 60°','Semua sudut 60°'],
+ ['iso',{labels:['65°','65°','50°'],ticks:[1,2]},'2 equal sides','2 sisi sama'],
+ ['sca',{labels:['50°','60°','70°']},'Nothing equal','Tidak ada yang sama']];
+ $('#s-ov').innerHTML=`<div class="kicker rev">Overview</div>
+ <h2 class="stitle rev" style="--d:.05s" data-en="Meet the four types" data-id="Kenali empat jenisnya">Meet the four types</h2>
+ <p class="lead rev" style="--d:.1s" data-en="Triangles are classified by their sides and their angles. Click a card to explore each type in detail — then practise finding its missing angles!" data-id="Segitiga dikelompokkan berdasarkan sisi dan sudutnya. Klik kartu untuk menjelajahi setiap jenis secara detail — lalu berlatihlah mencari sudut yang belum diketahui!">Triangles are classified by their sides and their angles. Click a card to explore each type in detail — then practise finding its missing angles!</p>
+ <div class="ogrid" id="ogrid"></div>`;
+ $('#ogrid').innerHTML=OV.map((o,i)=>`<div class="tcard" data-g="${i}">${drawTri(o[0],o[1],150)}<b>${TNAME[o[0]][0]}</b><small>${TNAME[o[0]][1]}</small><span data-en="${o[2]}" data-id="${o[3]}">${lang==='en'?o[2]:o[3]}</span></div>`).join('');
+ $$('#ogrid .tcard').forEach(c=>c.onclick=()=>goto(2+ +c.dataset.g));
+
+/* ---------- deep dives ---------- */
+function buildDD(key,idx){
+ const T=TD[key];
+ const CTL={
+  right:`<div class="srow"><label data-en="Angle a" data-id="Sudut a">Angle a</label><input type="range" id="slR" min="15" max="75" value="35"><output id="ovR">35°</output></div>`,
+  eq:`<div class="srow"><label data-en="Side length" data-id="Panjang sisi">Side length</label><input type="range" id="slE" min="0.55" max="1.35" step="0.05" value="1"><output id="ovE">1.00×</output></div>`,
+  iso:`<div class="srow"><label data-en="Vertex angle" data-id="Sudut puncak">Vertex angle</label><input type="range" id="slI" min="20" max="140" step="2" value="60"><output id="ovI">60°</output></div>`,
+  sca:`<div class="srow"><label data-en="Angle a" data-id="Sudut a">Angle a</label><input type="range" id="slSa" min="20" max="80" value="40"><output id="ovSa">40°</output></div>
+       <div class="srow"><label data-en="Angle b" data-id="Sudut b">Angle b</label><input type="range" id="slSb" min="20" max="80" value="65"><output id="ovSb">65°</output></div>`}[key];
+ $('#dd-'+key).innerHTML=`<div class="kicker rev">Type ${idx+1} of 4 · ${TNAME[key][1]}</div>
+  <h2 class="stitle rev" style="--d:.05s">${TNAME[key][0]} <span style="font-style:italic;font-weight:600;font-size:.55em;color:var(--soft)">${TNAME[key][1]}</span></h2>
+  <div class="cols c-2">
+   <div class="card rev" style="--d:.1s">
+     <div id="dv-${key}"></div>${CTL}
+     <div class="ctlrow"><button class="btn sm" id="rnd-${key}">${ic('refresh')}<span data-en="Surprise me!" data-id="Kejutkan aku!">Surprise me!</span></button></div>
+     <div class="eqline" id="eq-${key}"></div>
+   </div>
+   <div class="card rev" style="--d:.18s">
+     <h4 style="font-family:'Fraunces';font-size:20px" data-en="Properties" data-id="Sifat-sifat">Properties</h4>
+     <div class="plist">${T.props.map(p=>`<div>${ic('check')}<span data-en="${p[0]}" data-id="${p[1]}">${lang==='en'?p[0]:p[1]}</span></div>`).join('')}</div>
+     <div class="fcard"><b data-en="How to find the missing angle" data-id="Cara menentukan sudut yang belum diketahui">How to find the missing angle</b><span data-en="${T.how[0]}" data-id="${T.how[1]}">${lang==='en'?T.how[0]:T.how[1]}</span></div>
+     <p class="subex" data-en="${T.ex[0]}" data-id="${T.ex[1]}">${lang==='en'?T.ex[0]:T.ex[1]}</p>
+   </div>
+  </div>`;
+ const R=()=>Math.floor(Math.random());
+ const upd={
+  right(){const a=+$('#slR').value;$('#ovR').textContent=a+'°';
+   let W=210,h=W*Math.tan(a*Math.PI/180);const v=capV([[0,0],[W,0],[0,-h]]);
+   $('#dv-right').innerHTML=dynTri(v,[null,a+'°','x'],{rightMark:0,mw:440});
+   $('#eq-right').innerHTML=`x = 90° − ${a}° = <span class="ok">${90-a}°</span>`},
+  eq(){const f=+$('#slE').value;$('#ovE').textContent=f.toFixed(2)+'×';const W=190*f;
+   $('#dv-eq').innerHTML=dynTri([[0,0],[W,0],[W/2,-W*.866]],['60°','60°','60°'],{ticks:[0,1,2],mw:440});
+   $('#eq-eq').innerHTML=`x = 180° ÷ 3 = <span class="ok">60°</span>`},
+  iso(){const v=+$('#slI').value;$('#ovI').textContent=v+'°';
+   let W=240,h=(W/2)/Math.tan(v/2*Math.PI/180);const p=capV([[0,0],[W,0],[W/2,-h]]);
+   $('#dv-iso').innerHTML=dynTri(p,['x','x',v+'°'],{ticks:[1,2],mw:440});
+   $('#eq-iso').innerHTML=`x = (180° − ${v}°) ÷ 2 = <span class="ok">${(180-v)/2}°</span>`},
+  sca(){let a=+$('#slSa').value,b=+$('#slSb').value;if(a+b>158){b=158-a;$('#slSb').value=b}
+   $('#ovSa').textContent=a+'°';$('#ovSb').textContent=b+'°';
+   const ta=Math.tan(a*Math.PI/180),tb=Math.tan(b*Math.PI/180),W=260,x=W*tb/(ta+tb),y=x*ta;
+   const p=capV([[0,0],[W,0],[x,-y]]);
+   $('#dv-sca').innerHTML=dynTri(p,[a+'°',b+'°','x'],{mw:440});
+   $('#eq-sca').innerHTML=`x = 180° − ${a}° − ${b}° = <span class="ok">${180-a-b}°</span>`}}[key];
+ $('#sl'+key.charAt(0).toUpperCase()+key.slice(1)); // noop
+ const bind=()=>{const m={right:['slR'],eq:['slE'],iso:['slI'],sca:['slSa','slSb']}[key];m.forEach(id=>$('#'+id).addEventListener('input',upd))};
+ $('#rnd-'+key).onclick=()=>{
+  if(key==='right')$('#slR').value=15+R()*61;
+  if(key==='eq')$('#slE').value=(0.55+R()*17/100).toFixed(2);
+  if(key==='iso')$('#slI').value=20+2*R()*61;
+  if(key==='sca'){$('#slSa').value=20+R()*61;let b=20+R()*61;if(+$('#slSa').value+b>158)b=158-+$('#slSa').value;$('#slSb').value=b}
+  upd()};
+ bind();upd()}
+buildDD('right',0);buildDD('eq',1);buildDD('iso',2);buildDD('sca',3);
+
+/* ---------- practice generators (10 each) ---------- */
+function gRight(){const a=15+Math.floor(Math.random()*61);return{ans:90-a,shape:'right',o:{labels:['?',null,a+'°'],rightMark:1},
+ sol:[['The square mark shows the right angle: 90°.','Tanda kotak menunjukkan sudut siku-siku: 90°.'],['The two acute angles always add up to 90°.','Dua sudut lancipnya selalu berjumlah 90°.'],['x = 90° − '+a+'° = '+(90-a)+'°','x = 90° − '+a+'° = '+(90-a)+'°']]}}
+function gEq(){const L=['60°','60°','60°'];L[Math.floor(Math.random()*3)]='?';return{ans:60,shape:'eq',o:{labels:L,ticks:[0,1,2]},
+ sol:[['All three sides are equal → all three angles are equal.','Ketiga sisi sama panjang → ketiga sudut sama besar.'],['x = 180° ÷ 3 = 60°','x = 180° ÷ 3 = 60°']]}}
+function gIso(){
+ if(Math.random()<.5){const b=30+Math.floor(Math.random()*51);return{ans:180-2*b,shape:'iso',o:{labels:[b+'°',b+'°','?'],ticks:[1,2]},
+  sol:[['The tick marks show two equal sides, so the two given angles are the equal base angles.','Tanda tick menunjukkan dua sisi sama, jadi kedua sudut yang diketahui adalah sudut alas yang sama besar.'],['x = 180° − '+b+'° − '+b+'° = '+(180-2*b)+'°','x = 180° − '+b+'° − '+b+'° = '+(180-2*b)+'°']]}}
+ const v=2*(10+Math.floor(Math.random()*61)),x=(180-v)/2;return{ans:x,shape:'iso',base:true,o:{labels:['?','?',v+'°'],ticks:[1,2]},
+  sol:[['The two base angles are equal — each one is x.','Kedua sudut alas sama besar — masing-masing x.'],['2x + '+v+'° = 180°','2x + '+v+'° = 180°'],['x = (180° − '+v+'°) ÷ 2 = '+x+'°','x = (180° − '+v+'°) ÷ 2 = '+x+'°']]}}
+function gSca(){let a,b,c;do{a=20+Math.floor(Math.random()*61);b=20+Math.floor(Math.random()*61);c=180-a-b}while(c<20||c>130||c===a||c===b);
+ return{ans:c,shape:'sca',o:{labels:[a+'°',b+'°','?']},
+ sol:[['Angles in a triangle add up to 180°.','Jumlah sudut dalam segitiga adalah 180°.'],[''+a+'° + '+b+'° + x = 180°',a+'° + '+b+'° + x = 180°'],['x = 180° − '+a+'° − '+b+'° = '+c+'°','x = 180° − '+a+'° − '+b+'° = '+c+'°']]}}
+const GEN={right:gRight,eq:gEq,iso:gIso,sca:gSca};
+const QSTORE={};
+function buildPS(key,idx){
+ QSTORE[key]=Array.from({length:10},GEN[key]);
+ $('#ps-'+key).innerHTML=`<div class="kicker rev">Practice ${idx+1} of 4 · 10 questions</div>
+  <h2 class="stitle rev" style="--d:.05s">${TNAME[key][0]} <span style="font-style:italic;font-weight:600;font-size:.55em;color:var(--soft)">${TNAME[key][1]}</span></h2>
+  <div class="scorebar rev" style="--d:.08s"><span data-en="Correct (first try):" data-id="Benar (percobaan pertama):">Correct (first try):</span><div class="fw"><div class="fl" id="sbF-${key}"></div></div><span id="sbT-${key}">0 / 10</span></div>
+  <div id="ql-${key}"></div>`;
+ $('#ql-'+key).innerHTML=QSTORE[key].map((q,i)=>{
+  const qt=q.base?['Find each base angle x.','Tentukan besar setiap sudut alas x.']:['Find the missing angle x.','Tentukan besar sudut x.'];
+  return `<div class="qitem" id="qi-${key}-${i}"><span class="qnum">${i+1}</span>
+   <div class="qsvg">${drawTri(q.shape,q.o,160)}</div>
+   <div class="qbody"><div class="qq" data-en="${qt[0]}" data-id="${qt[1]}">${lang==='en'?qt[0]:qt[1]}</div>
+   <div class="qrow"><span class="xeq">x =</span><input type="number" id="in-${key}-${i}" placeholder="?" min="1" max="179"><span class="xeq">°</span>
+   <button class="btn teal sm" data-act="c" data-k="${key}" data-i="${i}">${ic('check')}<span data-en="Check" data-id="Periksa">Check</span></button>
+   <button class="btn sm" data-act="s" data-k="${key}" data-i="${i}">${ic('bulb')}<span data-en="Solution" data-id="Pembahasan">Solution</span></button></div>
+   <div class="fb" id="fb-${key}-${i}"></div>
+   <div class="qsol" id="so-${key}-${i}">${q.sol.map(p=>`<div class="sol-line" data-en="${p[0]}" data-id="${p[1]}">${lang==='en'?p[0]:p[1]}</div>`).join('')}</div>
+  </div></div>`}).join('')}
+buildPS('right',0);buildPS('eq',1);buildPS('iso',2);buildPS('sca',3);
+const updSB=k=>{$('#sbT-'+k).textContent=S.pr[k]+' / 10';$('#sbF-'+k).style.width=(S.pr[k]*10)+'%'};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;
+ const{act,k,i}=b.dataset;
+ if(act==='s'){$('#so-'+k+'-'+i).classList.toggle('show');return}
+ const q=QSTORE[k][i],v=parseInt($('#in-'+k+'-'+i).value),fb=$('#fb-'+k+'-'+i),card=$('#qi-'+k+'-'+i);
+ if(v===q.ans){if(!card.dataset.done){card.dataset.done=1;S.pr[k]++;updSB(k)}
+  fb.className='fb ok';setBI(fb,'Correct! Excellent!','Benar! Hebat!');card.classList.add('okstate');$('#in-'+k+'-'+i).disabled=true;b.disabled=true}
+ else{fb.className='fb bad';setBI(fb,'Not yet — use the 180° angle sum!','Belum tepat — gunakan jumlah sudut 180°!');fb.classList.add('shake');setTimeout(()=>fb.classList.remove('shake'),500)}});
+
+/* ---------- matching game ---------- */
+const TCOLOR=['#E4572E','#0F7B6C','#E29B18','#7B5EA7'];
+const MEXP={right:['It has exactly one right angle (the square mark).','Tepat satu sudut siku-siku (tanda kotak).'],
+ eq:['All three sides and all three angles are equal (60°).','Ketiga sisi dan sudutnya sama besar (60°).'],
+ iso:['Two equal sides (ticks) → two equal base angles.','Dua sisi sama (tick) → dua sudut alas sama.'],
+ sca:['No equal sides and no equal angles.','Tidak ada sisi atau sudut yang sama.']};
+let mRound=1,mSel=null,mLock=false,conn={},mItems=[],mNames=[];
+function makeM(){const b=30+Math.floor(Math.random()*51),a=15+Math.floor(Math.random()*61);
+ let x,y,z;do{x=20+Math.floor(Math.random()*61);y=20+Math.floor(Math.random()*61);z=180-x-y}while(z<20||z>130||z===x||z===y);
+ return shuf([{t:'eq',shape:'eq',labels:['60°','60°','60°'],ticks:[0,1,2]},
+  {t:'iso',shape:'iso',labels:[b+'°',b+'°',(180-2*b)+'°'],ticks:[1,2]},
+  {t:'right',shape:'right',labels:[(90-a)+'°','90°',a+'°'],rightMark:1},
+  {t:'sca',shape:'sca',labels:[x+'°',y+'°',z+'°']}])}
+function mAnchor(el,side){const r=el.getBoundingClientRect(),s=$('#mStage').getBoundingClientRect();
+ return[side==='r'?r.right-s.left-6:r.left-s.left+6,r.top-s.top+r.height/2]}
+function mDrawLines(){$('#mLines').innerHTML='';Object.keys(conn).forEach(i=>{
+ const n=$(`#mTri [data-i="${i}"]`),l=$(`#mLab [data-j="${conn[i]}"]`);if(!l)return;
+ const[a,b]=mAnchor(n,'r'),[c,d]=mAnchor(l,'l');
+ $('#mLines').insertAdjacentHTML('beforeend',`<line data-l="${i}" x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${TCOLOR[i]}"/>`)})}
+window.addEventListener('resize',()=>{if($('#mTri'))mDrawLines()});
+function mNew(){mItems=makeM();mNames=shuf(['right','eq','iso','sca']);conn={};mSel=null;mLock=false;
+ $('#mLines').innerHTML='';$('#mExp').innerHTML='';$('#mMsg').textContent='';$('#mMsg').className='';
+ $('#mNext').classList.add('hide');$('#mCheck').disabled=false;
+ $('#mRound').textContent=(lang==='en'?'Round ':'Ronde ')+mRound+' / 5';
+ $('#mDots').innerHTML=Array.from({length:5},(_,i)=>`<i class="${i+1<mRound?'ok':i+1===mRound?'on':''}"></i>`).join('');
+ $('#mTri').innerHTML=mItems.map((it,i)=>`<div class="match-node" data-i="${i}">${drawTri(it.shape,{labels:it.labels,ticks:it.ticks,rightMark:it.rightMark},170)}</div>`).join('');
+ $('#mLab').innerHTML=mNames.map((t,j)=>`<div class="match-label" data-j="${j}" data-t="${t}"><span data-en="${TNAME[t][0]}" data-id="${TNAME[t][1]}">${lang==='en'?TNAME[t][0]:TNAME[t][1]}</span></div>`).join('');
+ $$('#mTri .match-node').forEach(n=>n.onclick=()=>{if(mLock)return;const i=+n.dataset.i;mSel=mSel===i?null:i;
+  $$('#mTri .match-node').forEach(x=>x.classList.toggle('sel',+x.dataset.i===mSel))});
+ $$('#mLab .match-label').forEach(l=>l.onclick=()=>{if(mLock||mSel===null)return;const j=+l.dataset.j;
+  for(const k in conn)if(conn[k]===j||+k===mSel)delete conn[k];
+  conn[mSel]=j;mSel=null;$$('#mTri .match-node').forEach(x=>x.classList.remove('sel'));mDrawLines()})}
+ $('#s-match').innerHTML=`<div class="kicker rev">Game · 5 rounds</div>
+ <h2 class="stitle rev" style="--d:.05s" data-en="Match the triangle to its name" data-id="Jodohkan segitiga dengan namanya">Match the triangle to its name</h2>
+ <p class="lead rev" style="--d:.08s" data-en="Click a triangle, then click its correct name. A coloured line will connect them. Match all four, then press Check answers!" data-id="Klik sebuah segitiga, lalu klik namanya yang benar. Garis berwarna akan menghubungkannya. Jodohkan keempatnya, lalu tekan Periksa jawaban!">Click a triangle, then click its correct name. A coloured line will connect them. Match all four, then press Check answers!</p>
+ <div class="card rev" style="--d:.12s;margin-top:18px">
+  <div id="mStage"><svg id="mOverlay"><g id="mLines"></g></svg>
+   <div class="mcol" id="mTri"></div><div class="mcol" id="mLab"></div></div>
+  <div class="mctl"><span id="mRound"></span><span id="mDots"></span><span style="flex:1"></span>
+   <button class="btn teal" id="mCheck">${ic('check')}<span data-en="Check answers" data-id="Periksa jawaban">Check answers</span></button>
+   <button class="btn primary hide" id="mNext"><span data-en="Next round" data-id="Ronde berikutnya">Next round</span>${ic('right')}</button>
+   <button class="btn hide" id="mReplay">${ic('refresh')}<span data-en="Play again" data-id="Main lagi">Play again</span></button></div>
+  <div id="mMsg"></div><div id="mExp"></div></div>`;
+ $('#mCheck').onclick=()=>{if(Object.keys(conn).length<4){setBI($('#mMsg'),'Connect all four triangles first!','Hubungkan dulu keempat segitiganya!');$('#mMsg').className='bad';return}
+ mLock=true;$('#mMsg').textContent='';$$('#mTri .match-node').forEach(n=>n.classList.remove('sel','v-ok','v-bad'));
+ $$('#mLab .match-label').forEach(l=>l.classList.remove('hit-ok','hit-bad'));
+ let ok=0,rows='';
+ mItems.forEach((it,i)=>{const good=conn[i]!==undefined&&mNames[conn[i]]===it.t;if(good)ok++;
+  $(`#mTri [data-i="${i}"]`).classList.add(good?'v-ok':'v-bad');
+  if(conn[i]!==undefined)$(`#mLab [data-j="${conn[i]}"]`).classList.add(good?'hit-ok':'hit-bad');
+  rows+=`<div class="exp-row"><span class="exp-tri">${drawTri(it.shape,{labels:it.labels,ticks:it.ticks,rightMark:it.rightMark},80)}</span>
+   <span><b>△ ${i+1} — <span data-en="${TNAME[it.t][0]}" data-id="${TNAME[it.t][1]}">${lang==='en'?TNAME[it.t][0]:TNAME[it.t][1]}</span>.</b>
+   <span data-en="${MEXP[it.t][0]}" data-id="${MEXP[it.t][1]}">${lang==='en'?MEXP[it.t][0]:MEXP[it.t][1]}</span>
+   ${good?'<b class="ok"> ✓</b>':'<b class="bad"> ✗</b>'}</span></div>`});
+ S.match+=ok;$$('#mDots i')[mRound-1].className=ok===4?'ok':'bad';
+ $('#mExp').innerHTML=rows;
+ if(mRound===5){setBI($('#mMsg'),`All 5 rounds done! Total matched: ${S.match} / 20. ${S.match===20?'PERFECT!':'Great effort!'}`,`5 ronde selesai! Total: ${S.match} / 20. ${S.match===20?'SEMPURNA!':'Kerja bagus!'}`);$('#mMsg').className='ok';$('#mReplay').classList.remove('hide')}
+ else{$('#mNext').classList.remove('hide');setBI($('#mMsg'),`You matched ${ok} of 4 correctly.`,'Kamu mencocokkan '+ok+' dari 4 dengan benar.');$('#mMsg').className=ok===4?'ok':'bad'}};
+ $('#mNext').onclick=()=>{mRound++;mNew()};
+ $('#mReplay').onclick=()=>{mRound=1;S.match=0;mNew();$('#mReplay').classList.add('hide')};
+mNew();
+
+/* ---------- riddle quiz ---------- */
+const RID=[
+ {en:'I have exactly one right angle. My other angles are 35° and 55°. Who am I?',id:'Aku punya tepat satu sudut siku-siku. Dua sudutku lainnya 35° dan 55°. Siapakah aku?',ang:[35,55,90],ans:'right',we:'Exactly one 90° angle → right triangle.',wi:'Tepat satu sudut 90° → segitiga siku-siku.'},
+ {en:'All my sides are equal, so every angle of mine is 180° ÷ 3.',id:'Semua sisiku sama panjang, jadi setiap sudutku 180° ÷ 3.',ang:[60,60,60],ans:'eq',we:'Equal sides → three equal 60° angles.',wi:'Sisi sama → tiga sudut sama 60°.'},
+ {en:'I have exactly two equal sides, and my base angles are both 70°.',id:'Aku punya tepat dua sisi sama, dan kedua sudut alasku 70°.',ang:[70,70,40],ans:'iso',we:'Two equal sides, two equal base angles, no right angle.',wi:'Dua sisi sama, dua sudut alas sama, tanpa sudut siku.'},
+ {en:'All my sides are different: my angles are 50°, 60° and 70°.',id:'Semua sisiku berbeda: sudut-sudutku 50°, 60°, dan 70°.',ang:[50,60,70],ans:'sca',we:'Nothing equal and no right angle → scalene.',wi:'Tidak ada yang sama dan tanpa sudut siku → sembarang.'},
+ {en:'My vertex angle is 100°, and my two base angles are equal.',id:'Sudut puncakku 100°, dan kedua sudut alasku sama besar.',ang:[100,40,40],ans:'iso',we:'100° + 40° + 40° = 180°, with two equal sides → isosceles.',wi:'100° + 40° + 40° = 180°, dengan dua sisi sama → sama kaki.'},
+ {en:'I look like a ladder leaning on a wall: one angle is exactly 90°.',id:'Aku tampak seperti tangga bersandar di dinding: satu sudutku tepat 90°.',ang:[30,60,90],ans:'right',we:'One 90° angle → right triangle. Its sides are all different — it is also scalene!',wi:'Satu sudut 90° → segitiga siku-siku. Sisinya semua berbeda — ia juga sembarang!'},
+ {en:'Three different angles, three different sides, and no 90° anywhere.',id:'Tiga sudut berbeda, tiga sisi berbeda, dan tidak ada 90°.',ang:[45,55,80],ans:'sca',we:'Nothing equal, no right angle → scalene.',wi:'Tidak ada yang sama, tanpa sudut siku → sembarang.'},
+ {en:'Two of my angles are 75° each — my equal sides love symmetry!',id:'Dua sudutku masing-masing 75° — sisi-sisi sama saya menyukai simetri!',ang:[75,75,30],ans:'iso',we:'Two equal angles face the two equal sides → isosceles.',wi:'Dua sudut sama menghadap dua sisi sama → sama kaki.'}];
+let rIdx=0,rFirst=true,rLock=false;
+ $('#s-riddle').innerHTML=`<div class="kicker rev">Guessing game · 8 riddles</div>
+ <h2 class="stitle rev" style="--d:.05s" data-en="Mystery triangle: who am I?" data-id="Segitiga misterius: siapakah aku?">Mystery triangle: who am I?</h2>
+ <div class="scorebar rev" style="--d:.08s"><span data-en="Score:" data-id="Skor:">Score:</span><span id="ridScore">0 / 8</span></div>
+ <div class="card rev" style="--d:.12s;margin-top:18px">
+  <div id="ridIdx" style="font-weight:900;color:var(--soft);font-size:13.5px"></div>
+  <p class="ridclue" id="ridClue"></p>
+  <div id="ridSvg"></div>
+  <div class="ridbtns">${['right','eq','iso','sca'].map(t=>`<button class="ridbtn" data-t="${t}"><span data-en="${TNAME[t][0]}" data-id="${TNAME[t][1]}">${lang==='en'?TNAME[t][0]:TNAME[t][1]}</span></button>`).join('')}</div>
+  <div id="ridFb" style="font-weight:900;text-align:center;margin-top:14px;min-height:22px"></div>
+  <div class="fcard hide" id="ridWhy" style="text-align:center"><span id="ridWhyTx"></span></div>
+  <div class="ctlrow" style="justify-content:center">
+   <button class="btn primary hide" id="ridNext"><span data-en="Next riddle" data-id="Tebakan berikutnya">Next riddle</span>${ic('right')}</button>
+   <button class="btn teal hide" id="ridRes"><span data-ic="trophy"></span><span data-en="See my results" data-id="Lihat hasilku">See my results</span></button></div></div>`;
+function ridShow(){const r=RID[rIdx];$('#ridIdx').textContent=(lang==='en'?'Riddle ':'Tebakan ')+(rIdx+1)+' / 8';
+ setBI($('#ridClue'),r.en,r.id);
+ $('#ridSvg').innerHTML=drawTri('gen',{labels:[r.ang[0]+'°',r.ang[1]+'°',r.ang[2]+'°'],fill:'#F1E8D6'},240);
+ $('#ridFb').textContent='';$('#ridWhy').classList.add('hide');$('#ridNext').classList.add('hide');
+ rFirst=true;rLock=false;
+ $$('.ridbtn').forEach(b=>{b.disabled=false;b.classList.remove('ok','bad')})}
+ $$('.ridbtn').forEach(b=>b.onclick=()=>{if(rLock)return;const r=RID[rIdx];
+ if(b.dataset.t===r.ans){rLock=true;b.classList.add('ok');b.disabled=true;
+  if(rFirst){S.rid++;$('#ridScore').textContent=S.rid+' / 8'}
+  setBI($('#ridFb'),'Correct! Mystery solved!','Benar! Misteri terpecahkan!');$('#ridFb').className='ok';
+  $('#ridWhy').classList.remove('hide');setBI($('#ridWhyTx'),r.we,r.wi);
+  $('#ridNext').classList.remove('hide')}
+ else{rFirst=false;b.classList.add('bad');b.disabled=true;
+  setBI($('#ridFb'),'Not quite — read the clues again!','Belum tepat — baca lagi petunjuknya!');$('#ridFb').className='bad'}});
+ $('#ridNext').onclick=()=>{rIdx++;if(rIdx<RID.length)ridShow();
+ else{$('#ridIdx').textContent=(lang==='en'?'All riddles done!':'Semua tebakan selesai!');$('#ridNext').classList.add('hide');$('#ridRes').classList.remove('hide')}};
+ $('#ridRes').onclick=()=>goto(13);
+ridShow();
+
+/* ---------- flashcards ---------- */
+const FC=[
+['Every triangle has exactly 3 sides.','Setiap segitiga memiliki tepat 3 sisi.',1,'That is the definition of a triangle!','Itu definisi segitiga!'],
+['An equilateral triangle has three 60° angles.','Segitiga sama sisi memiliki tiga sudut 60°.',1,'180° ÷ 3 = 60°.','180° ÷ 3 = 60°.'],
+['A right triangle has two right angles.','Segitiga siku-siku memiliki dua sudut siku-siku.',0,'Only ONE right angle — two would break the 180° rule.','Hanya SATU sudut siku — dua akan melanggar aturan 180°.'],
+['The angles of any triangle add up to 180°.','Jumlah sudut segitiga mana pun adalah 180°.',1,'Always — big or small!','Selalu — besar atau kecil!'],
+['An isosceles triangle has at least two equal sides.','Segitiga sama kaki memiliki minimal dua sisi sama.',1,'Two equal sides, two equal base angles.','Dua sisi sama, dua sudut alas sama.'],
+['A scalene triangle has two equal angles.','Segitiga sembarang memiliki dua sudut sama.',0,'Scalene = ALL sides and angles different.','Sembarang = SEMUA sisi dan sudut berbeda.'],
+['All angles in an equilateral triangle are acute.','Semua sudut segitiga sama sisi adalah lancip.',1,'60° < 90°, so yes — all acute!','60° < 90°, jadi ya — semua lancip!'],
+['A triangle can have two right angles.','Segitiga bisa memiliki dua sudut siku-siku.',0,'90° + 90° = 180°, leaving nothing for the third angle!','90° + 90° = 180°, tidak ada sisa untuk sudut ketiga!'],
+['The base angles of an isosceles triangle are equal.','Kedua sudut alas segitiga sama kaki sama besar.',1,'Equal sides face equal angles.','Sisi sama menghadap sudut sama.'],
+['In a right triangle, the two acute angles add up to 90°.','Pada segitiga siku-siku, dua sudut lancipnya berjumlah 90°.',1,'180° − 90° = 90° for the other two angles.','180° − 90° = 90° untuk dua sudut lainnya.'],
+['An equilateral triangle can have a right angle.','Segitiga sama sisi bisa memiliki sudut siku-siku.',0,'All its angles are always 60°.','Semua sudutnya selalu 60°.'],
+['A scalene triangle has no equal sides.','Segitiga sembarang tidak punya sisi yang sama.',1,'That is what makes it scalene!','Itulah yang membuatnya sembarang!'],
+['The vertex angle sits between the two equal sides.','Sudut puncak berada di antara dua sisi yang sama.',1,'At the top, where the equal sides meet.','Di puncak, tempat bertemunya dua sisi sama.'],
+['A triangle can have angles 100°, 40° and 40°.','Segitiga bisa memiliki sudut 100°, 40°, dan 40°.',1,'They sum to 180° — it is isosceles!','Jumlahnya 180° — itu sama kaki!'],
+['A triangle can have angles 90°, 90° and 10°.','Segitiga bisa memiliki sudut 90°, 90°, dan 10°.',0,'Sum = 190°. Too much!','Jumlahnya 190°. Kebanyakan!'],
+['Every triangle has at least two acute angles.','Setiap segitiga punya minimal dua sudut lancip.',1,'Only one angle can be 90° or bigger.','Hanya satu sudut yang bisa 90° atau lebih.'],
+['The small square symbol means a 90° angle.','Simbol kotak kecil berarti sudut 90°.',1,'The right-angle mark!','Tanda sudut siku-siku!'],
+['A scalene triangle can have a right angle.','Segitiga sembarang bisa memiliki sudut siku-siku.',1,'For example 30°, 60°, 90° — all sides different.','Misalnya 30°, 60°, 90° — semua sisi berbeda.'],
+['An equilateral triangle has exactly two equal sides.','Segitiga sama sisi memiliki tepat dua sisi yang sama.',0,'All THREE sides are equal.','KETIGA sisinya sama panjang.'],
+['If two angles are 45° and 45°, the third is 90°.','Jika dua sudutnya 45° dan 45°, sudut ketiga 90°.',1,'180° − 45° − 45° = 90°.','180° − 45° − 45° = 90°.'],
+['An isosceles triangle can have base angles of 95°.','Segitiga sama kaki bisa memiliki sudut alas 95°.',0,'95° + 95° = 190° — impossible!','95° + 95° = 190° — mustahil!'],
+['The longest side faces the largest angle.','Sisi terpanjang menghadap sudut terbesar.',1,'A helpful rule for checking answers.','Aturan bermanfaat untuk memeriksa jawaban.'],
+['A triangle can have three 50° angles.','Segitiga bisa memiliki tiga sudut 50°.',0,'Sum = 150°, not 180°.','Jumlahnya 150°, bukan 180°.'],
+['An isosceles triangle can be a right triangle.','Segitiga sama kaki bisa menjadi segitiga siku-siku.',1,'The 45°–45°–90° triangle!','Segitiga 45°–45°–90°!'],
+['A scalene triangle has three different angles.','Segitiga sembarang memiliki tiga sudut berbeda.',1,'Different sides → different angles.','Sisi berbeda → sudut berbeda.'],
+['If one angle is 120°, the other two add up to 60°.','Jika satu sudut 120°, dua sudut lainnya berjumlah 60°.',1,'180° − 120° = 60°.','180° − 120° = 60°.'],
+['Sides of 5 cm, 5 cm and 6 cm make an equilateral triangle.','Sisi 5 cm, 5 cm, dan 6 cm membentuk segitiga sama sisi.',0,'One side is different — it is isosceles!','Satu sisi berbeda — itu sama kaki!'],
+['Angles 30°, 60° and 90° make a scalene right triangle.','Sudut 30°, 60°, dan 90° membentuk segitiga siku-siku sembarang.',1,'One right angle + all sides different.','Satu sudut siku + semua sisi berbeda.'],
+['An obtuse angle can be the vertex angle of an isosceles triangle.','Sudut tumpul bisa menjadi sudut puncak segitiga sama kaki.',1,'For example 100°, 40°, 40°.','Misalnya 100°, 40°, 40°.'],
+['Two triangles of different sizes can have the same angles.','Dua segitiga dengan ukuran berbeda bisa memiliki sudut yang sama.',1,'Angles decide the shape, not the size!','Sudut menentukan bentuk, bukan ukuran!']];
+let fIdx=0;
+ $('#s-flash').innerHTML=`<div class="kicker rev">Quick brain workout · 30 cards</div>
+ <h2 class="stitle rev" style="--d:.05s" data-en="True or false? Answer fast!" data-id="Benar atau salah? Jawab cepat!">True or false? Answer fast!</h2>
+ <div class="scorebar rev" style="--d:.08s"><span id="fcIdx">1 / 30</span><div class="fw"><div class="fl" id="fcBar"></div></div><span data-en="Correct:" data-id="Benar:">Correct:</span><span id="fcScore">0</span></div>
+ <div class="rev" style="--d:.12s;margin-top:18px">
+  <div class="fstage"><div id="fcText"></div></div>
+  <div class="fyesno">
+   <button class="btn teal" id="fcY">${ic('check')}<span data-en="YES" data-id="YA">YES</span></button>
+   <button class="btn primary" id="fcN">${ic('x')}<span data-en="NO" data-id="TIDAK">NO</span></button>
+  </div>
+  <div id="fcV"></div><div id="fcExp"></div>
+  <div class="ctlrow" style="justify-content:center"><button class="btn hide" id="fcNext"><span id="fcNextTx">Next card</span>${ic('right')}</button></div></div>`;
+function fcShow(){const f=FC[fIdx];$('#fcIdx').textContent=(fIdx+1)+' / 30';$('#fcBar').style.width=(fIdx/30*100)+'%';
+ setBI($('#fcText'),f[0],f[1]);$('#fcV').textContent='';$('#fcExp').textContent='';
+ $('#fcY').disabled=false;$('#fcN').disabled=false;$('#fcNext').classList.add('hide')}
+function fcAns(yes){const f=FC[fIdx],good=(yes&&f[2]===1)||(!yes&&f[2]===0);
+ if(good){S.flash++;$('#fcScore').textContent=S.flash}
+ const v=$('#fcV');v.className=good?'ok':'bad';setBI(v,good?'Correct!':'Not quite!',good?'Benar!':'Belum tepat!');
+ setBI($('#fcExp'),f[3],f[4]);
+ $('#fcY').disabled=true;$('#fcN').disabled=true;
+ setBI($('#fcNextTx'),fIdx===29?'See my results':'Next card',fIdx===29?'Lihat hasilku':'Kartu berikutnya');
+ $('#fcNext').classList.remove('hide')}
+ $('#fcY').onclick=()=>fcAns(true);$('#fcN').onclick=()=>fcAns(false);
+ $('#fcNext').onclick=()=>{fIdx++;if(fIdx===30)goto(13);else fcShow()};
+fcShow();
+
+/* ---------- results ---------- */
+function renderResults(){const rows=[
+ ['Right practice','Latihan siku-siku',S.pr.right,10],['Equilateral practice','Latihan sama sisi',S.pr.eq,10],
+ ['Isosceles practice','Latihan sama kaki',S.pr.iso,10],['Scalene practice','Latihan sembarang',S.pr.sca,10],
+ ['Matching game','Permainan mencocokkan',S.match,20],['Riddle quiz','Kuis tebak-tebakan',S.rid,8],['Flashcards','Kartu sifat',S.flash,30]];
+ const tot=rows.reduce((a,r)=>a+r[2],0),max=98,pct=Math.round(tot/max*100);
+ const st=pct>=90?5:pct>=75?4:pct>=60?3:pct>=40?2:1;
+ const MSG=pct>=90?['Triangle Master! Outstanding work!','Master Segitiga! Luar biasa!']:
+  pct>=75?['Great job! You really know your triangles.','Kerja bagus! Kamu benar-benar mengenal segitiga.']:
+  pct>=60?['Good effort — review the slides and try again.','Usaha bagus — pelajari kembali slide dan coba lagi.']:
+  pct>=40?['Keep practising — you are getting there!','Terus berlatih — kamu hampir sampai!']:
+  ['Do not give up! Revisit the material and retry.','Jangan menyerah! Pelajari kembali materinya lalu coba lagi.'];
+ $('#s-results').innerHTML=`<div class="kicker rev">Student report</div>
+  <h2 class="stitle rev" style="--d:.05s" data-en="My results today" data-id="Hasil belajarku hari ini">My results today</h2>
+  <p class="lead rev" style="--d:.08s" data-en="${name?'Way to go, '+name+'! Only first-try answers count as correct.':'Way to go! Only first-try answers count as correct.'}" data-id="${name?'Kerja hebat, '+name+'! Hanya jawaban benar pada percobaan pertama yang dihitung.':'Kerja hebat! Hanya jawaban benar pada percobaan pertama yang dihitung.'}">${lang==='en'?(name?'Way to go, '+name+'! Only first-try answers count as correct.':'Way to go! Only first-try answers count as correct.'):(name?'Kerja hebat, '+name+'! Hanya jawaban benar pada percobaan pertama yang dihitung.':'Kerja hebat! Hanya jawaban benar pada percobaan pertama yang dihitung.')}</p>
+  <div class="card rev" style="--d:.12s;margin-top:20px">
+   ${rows.map(r=>`<div class="rrow"><span class="rname" data-en="${r[0]}" data-id="${r[1]}">${lang==='en'?r[0]:r[1]}</span><div class="rbar"><div class="rfill" style="width:${r[2]/r[3]*100}%"></div></div><span class="rval">${r[2]} / ${r[3]}</span></div>`).join('')}
+   <div class="rtotal"><span style="font-weight:900;color:var(--soft);text-transform:uppercase;letter-spacing:.1em;font-size:12.5px" data-en="Total score" data-id="Total skor">Total score</span>
+   <b>${tot} / ${max}</b>
+   <span class="starline"><em>${'★'.repeat(st)}</em>${'☆'.repeat(5-st)}</span>
+   <span data-en="${MSG[0]}" data-id="${MSG[1]}">${lang==='en'?MSG[0]:MSG[1]}</span></div>
+   <div style="text-align:center;margin-top:18px"><button class="btn teal" id="resTrophy">${ic('trophy')}<span data-en="Continue to the wrap-up" data-id="Lanjut ke penutup">Continue to the wrap-up</span></button></div></div>`;
+ $('#resTrophy').onclick=()=>goto(14)}
+
+/* ---------- reflection stars ---------- */
+ $('#stars').innerHTML=[1,2,3,4,5].map(n=>`<button data-s="${n}">★</button>`).join('');
+ $$('#stars button').forEach(b=>b.onclick=()=>{const s=+b.dataset.s;$$('#stars button').forEach(x=>x.classList.toggle('on',+x.dataset.s<=s))});
+
+setLang('en');goto(0);
+</script>
+</body>
+</html>
